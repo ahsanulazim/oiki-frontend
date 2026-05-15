@@ -17,6 +17,7 @@ const ProductData = () => {
             <th>Price</th>
             <th>Category</th>
             <th>Featured</th>
+            <th>Stock</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -47,12 +48,15 @@ const ProductData = () => {
             <td>$10000</td>
             <td>Kurti</td>
             <td>
-              <button className="btn btn-circle btn-ghost btn-warning">
+              <button className="btn btn-circle btn-soft btn-warning">
                 <LuStar />
               </button>
             </td>
             <td>
-              <button className="btn btn-ghost btn-circle">
+              <span className="badge badge-success">In Stock</span>
+            </td>
+            <td>
+              <button className="btn btn-soft btn-circle">
                 <LuEllipsis />
               </button>
             </td>

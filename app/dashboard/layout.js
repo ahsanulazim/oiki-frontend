@@ -1,12 +1,11 @@
 "use client";
 
 import DashNav from "@/components/dashboard/DashNav";
-import Spinner from "@/components/skeleton/Spinner";
 import { MyContext } from "@/context/MyProvider";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
-import { LuBox, LuHouse, LuSettings2 } from "react-icons/lu";
+import { LuBox, LuLayoutDashboard, LuSettings2 } from "react-icons/lu";
 
 const layout = ({ children }) => {
   const { newUser, loading } = useContext(MyContext);
@@ -25,7 +24,9 @@ const layout = ({ children }) => {
         {/* Navbar */}
         <DashNav />
         {/* Page content here */}
-        <main className="p-4 bg-base-300 h-dvh">{children}</main>
+        <main className="p-4 bg-base-300 min-h-[calc(100dvh-64px)]">
+          {children}
+        </main>
       </div>
 
       <div className="drawer-side is-drawer-close:overflow-visible">
@@ -42,11 +43,11 @@ const layout = ({ children }) => {
               <Link
                 href="/dashboard"
                 className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                data-tip="Homepage"
+                data-tip="Dashboard"
               >
                 {/* Home icon */}
-                <LuHouse className="my-1.5 inline-block size-4" />
-                <span className="is-drawer-close:hidden">Homepage</span>
+                <LuLayoutDashboard className="my-1.5 inline-block size-4" />
+                <span className="is-drawer-close:hidden">Dashboard</span>
               </Link>
             </li>
 

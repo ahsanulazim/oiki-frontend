@@ -1,5 +1,6 @@
 import { DM_Sans, Hind_Siliguri } from "next/font/google";
 import "./globals.css";
+import "react-quill-new/dist/quill.snow.css";
 import QueryProvider from "@/query/QueryProvider";
 import { Toaster } from "react-hot-toast";
 import MyProvider from "@/context/MyProvider";

@@ -1,9 +1,12 @@
+import Breadcrumbs from "@/components/dashboard/Breadcrumbs";
 import ProductData from "@/components/dashboard/products/ProductData";
+import Link from "next/link";
 import { LuPlus, LuSearch } from "react-icons/lu";
 
 const page = () => {
   return (
     <>
+      <Breadcrumbs title="Products" />
       <section className="mb-5">
         <div className="flex items-center justify-between">
           <h2 className="font-bold text-2xl w-1/2">Products</h2>
@@ -20,9 +23,12 @@ const page = () => {
               <option>New Items</option>
               <option>Featured</option>
             </select>
-            <button className="btn btn-main">
+            <Link
+              href="/dashboard/products/add-product"
+              className="btn btn-main"
+            >
               <LuPlus /> Add Products
-            </button>
+            </Link>
           </div>
         </div>
       </section>

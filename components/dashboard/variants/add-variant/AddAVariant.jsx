@@ -1,11 +1,11 @@
 "use client";
-import { addVariant } from "@/api/varientApi";
+import { addAttribute } from "@/api/varientApi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { LuPlus } from "react-icons/lu";
 
-const AddVariant = () => {
+const AddAVariant = ({ variant }) => {
   const {
     register,
     handleSubmit,
@@ -16,9 +16,9 @@ const AddVariant = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: addVariant,
+    mutationFn: addAttribute,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["variants"] });
+      queryClient.invalidateQueries({ queryKey: ["attributes"] });
       reset();
       toast.success("Variant added successfully!");
     },
@@ -28,48 +28,63 @@ const AddVariant = () => {
   });
 
   const onSubmit = (data) => {
-    mutation.mutate(data);
+    mutation.mutate({ data, slug: variant.data.slug });
   };
 
   return (
     <div className="">
       <h2 className="text-lg font-bold">Add New Variant</h2>
-      <form className="fieldset mt-5" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className="fieldset bg-base-100 p-5 rounded-box mt-5"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <label htmlFor="name" className="label">
           Name
         </label>
         <input
           type="text"
-          placeholder="Color"
+          placeholder="Red"
           className="input w-full"
           {...register("name", { required: "Variation Name is Required" })}
         />
         {errors.name && <p className="text-red-600">{errors.name.message}</p>}
-        <label htmlFor="slug" className="label">
+        <label htmlFor="variantSlug" className="label">
           Slug
         </label>
         <input
           type="text"
-          placeholder="color"
+          placeholder="red"
           className="input w-full"
-          {...register("slug", { required: "Slug is Required" })}
+          {...register("variantSlug", {
+            required: "Variation slug is Required",
+          })}
         />
-        {errors.slug && <p className="text-red-600">{errors.slug.message}</p>}
-        <label htmlFor="type" className="label">
-          Type
+        {errors.variantSlug && (
+          <p className="text-red-600">{errors.variantSlug.message}</p>
+        )}
+        <label htmlFor="attribute" className="label">
+          {variant.data.type === "button" ? "Add Button" : "Add Swatch"}
         </label>
-        <select
-          defaultValue=""
-          className="select w-full"
-          {...register("type", { required: "Type is required" })}
-        >
-          <option value="" disabled={true}>
-            Select a Type
-          </option>
-          <option value="swatch">Swatch</option>
-          <option value="button">Button</option>
-        </select>
-        {errors.type && <p className="text-red-600">{errors.type.message}</p>}
+
+        {variant.data.type === "button" ? (
+          <input
+            type="text"
+            placeholder="S"
+            className="input w-full"
+            {...register("attribute", {
+              required: "Variant attribute is Required",
+            })}
+          />
+        ) : (
+          <input
+            type="color"
+            className="size-10"
+            {...register("attribute", {
+              required: "Variant attribute is Required",
+            })}
+          />
+        )}
+
         <button
           type="submit"
           className={`mt-5 btn ${mutation.isLoading ? "" : "btn-main"}`}
@@ -87,4 +102,4 @@ const AddVariant = () => {
   );
 };
 
-export default AddVariant;
+export default AddAVariant;

@@ -2,7 +2,9 @@ const VariantModal = ({ ref, isButton }) => {
   return (
     <dialog ref={ref} className="modal">
       <div className="modal-box">
-        <h3 className="font-bold text-lg">Hello!</h3>
+        <h3 className="font-bold text-lg">
+          {isButton ? "Add New Button" : "Add New Color"}
+        </h3>
         <p className="py-4">Press ESC key or click the button below to close</p>
         {isButton ? (
           <button type="button" className="btn">

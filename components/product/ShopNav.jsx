@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { LuHouse } from "react-icons/lu";
 
-const ShopNav = () => {
+const ShopNav = ({ category, product }) => {
   return (
-    <section>
+    <section className="px-5">
       <div className="max-w-360 mx-auto">
         <div className="breadcrumbs text-sm">
           <ul>
@@ -13,9 +13,9 @@ const ShopNav = () => {
               </Link>
             </li>
             <li>
-              <Link href="#">Kurti</Link>
+              <Link href={`/products/${category}`}>Kurti</Link>
             </li>
-            <li>Product Name</li>
+            <li>{product.productName}</li>
           </ul>
         </div>
       </div>

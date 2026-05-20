@@ -15,7 +15,7 @@ const ShopNav = ({ category, product }) => {
             <li>
               <Link href={`/products/${category}`}>Kurti</Link>
             </li>
-            <li>{product.productName}</li>
+            <li>{product?.productName}</li>
           </ul>
         </div>
       </div>

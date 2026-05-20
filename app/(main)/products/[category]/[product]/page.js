@@ -13,9 +13,15 @@ const page = async ({ params }) => {
 
   const productData = await res.json();
 
+  console.log(productData);
+
+  if (!productData) {
+    return <div>Product not found</div>;
+  }
+
   return (
     <>
-      <ShopNav category={productData.category} product={productData} />
+      <ShopNav category={productData?.category} product={productData} />
       <ProductInfo product={productData} />
     </>
   );

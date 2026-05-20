@@ -5,7 +5,7 @@ const page = async ({ params }) => {
   const { product } = await params;
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/products/getProductBySlug/${product}`,
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/products/getProductBySlug/?slug=${product}`,
     {
       method: "GET",
     },

@@ -8,6 +8,7 @@ import Variations from "./Variations";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createProduct } from "@/api/productApi";
 import { toast } from "react-toastify";
+import Editor from "./Editor";
 
 const ProductForm = ({ ref }) => {
   const {
@@ -39,34 +40,7 @@ const ProductForm = ({ ref }) => {
 
   const onSubmit = (data) => {
     console.log(data);
-    mutation.mutate(data);
-  };
-
-  //quill formats
-  const formats = [
-    "header",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "list",
-    "align",
-    "blockquote",
-    "code-block",
-    "link",
-    "image",
-  ];
-
-  const modules = {
-    toolbar: [
-      [{ header: [1, 2, 3, false] }], // Heading options
-      ["bold", "italic", "underline", "strike"], // Text styles
-      [{ list: "ordered" }, { list: "bullet" }], // Lists
-      [{ align: [] }], // Alignment
-      ["blockquote", "code-block"], // Block styles
-      ["link", "image"], // Links & Images
-      ["clean"], // Remove formatting
-    ],
+    //mutation.mutate(data);
   };
 
   const [images, setImages] = useState([]);
@@ -143,22 +117,7 @@ const ProductForm = ({ ref }) => {
           <label htmlFor="productDescription" className="label">
             Product Description<span className="text-red-600">*</span>
           </label>
-          <Controller
-            name="productDescription"
-            rules={{ required: "Product Description is required" }}
-            control={control}
-            render={({ field }) => (
-              <ReactQuill
-                className="border border-gray-300 rounded-md"
-                {...field}
-                modules={modules}
-                formats={formats}
-              />
-            )}
-          />
-          {errors.productDescription && (
-            <p className="text-red-600">{errors.productDescription.message}</p>
-          )}
+          <Editor control={control} errors={errors} />
         </div>
         <div className="fieldset bg-base-100 p-5 rounded-box mt-5">
           <h2 className="font-bold text-xl">Pricing</h2>

@@ -22,12 +22,16 @@ const ProductInfo = ({ product }) => {
             <div className="badge badge-success badge-soft mb-3">
               <FaStar /> Best Seller
             </div>
-            <h1 className="font-bold text-4xl">{product.productName}</h1>
+            <h1 className="font-bold text-2xl lg:text-4xl">
+              {product?.productName}
+            </h1>
 
-            <p className="font-bold text-2xl text-main">${product.price}</p>
-            <div className="flex items-center">
-              <div className="flex items-center gap-2">
-                <div className=" flex items-center gap-2 text-yellow-500">
+            <p className="font-bold text-xl lg:text-2xl text-main">
+              ${product?.price}
+            </p>
+            <div className="flex items-center max-xs:mt-3 max-lg:text-sm">
+              <div className="flex flex-col xs:flex-row xs:items-center xs:gap-2">
+                <div className=" flex items-center gap-1 lg:gap-2 text-yellow-500">
                   <FaStar />
                   <FaStar />
                   <FaStar />
@@ -38,13 +42,14 @@ const ProductInfo = ({ product }) => {
               </div>
               <div className="divider divider-horizontal"></div>
               <p>
-                🔥<span className="font-bold">500+</span> Sold This Week!{" "}
+                <span className="font-bold">🔥500+</span> Sold This Week!
               </p>
             </div>
             <div className="bg-base-300 p-5 rounded-box my-5">
               <div className="text-sm flex items-center gap-6">
                 <p>
-                  SKU: <span className="font-bold">{product.sku || "N/A"}</span>
+                  SKU:{" "}
+                  <span className="font-bold">{product?.sku || "N/A"}</span>
                 </p>
                 <p>
                   Sold By:{" "}
@@ -54,7 +59,7 @@ const ProductInfo = ({ product }) => {
               <div className="my-3">
                 <h3 className="font-bold text-sm">Size:</h3>
                 <div className="flex items-center gap-3 mt-2">
-                  {product.size?.map((sizes) => (
+                  {product?.size?.map((sizes) => (
                     <button
                       key={sizes.value}
                       className="btn btn-square btn-outline rounded-box border-main"
@@ -65,7 +70,7 @@ const ProductInfo = ({ product }) => {
                 </div>
               </div>
               <h3 className="text-sm">
-                Stock: <span className="font-bold">{product.stock}</span>
+                Stock: <span className="font-bold">{product?.stock}</span>
               </h3>
               <div className="my-3 flex items-center gap-3">
                 <p className="text-lg font-bold">Quantity:</p>
@@ -73,7 +78,7 @@ const ProductInfo = ({ product }) => {
                   type="number"
                   className="input w-15"
                   min="1"
-                  max={product.stock}
+                  max={product?.stock}
                   defaultValue={1}
                 />
               </div>
@@ -83,39 +88,45 @@ const ProductInfo = ({ product }) => {
               </div>
             </div>
             <div className="flex max-md:flex-col items-center xl:gap-4">
-              <div className="flex items-center gap-5 justify-between max-lg:mb-5">
-                <div className="flex flex-col items-center">
+              <div className="flex xs:items-center flex-col xs:flex-row gap-5 justify-between max-lg:mb-5">
+                <div className="flex max-xs:gap-3 xs:flex-col items-center">
                   <div className="size-10 bg-main/10 text-main rounded-full flex items-center justify-center">
                     <LuShirt />
                   </div>
-                  <h3 className="font-bold max-lg:text-lg max-xl:text-sm whitespace-nowrap">
-                    100% Cotton
-                  </h3>
-                  <p className="opacity-50 lg:text-xs xl:text-sm whitespace-nowrap">
-                    No Mixes no Blends
-                  </p>
+                  <div className="xs:text-center">
+                    <h3 className="font-bold max-lg:text-base max-xl:text-sm whitespace-nowrap">
+                      100% Cotton
+                    </h3>
+                    <p className="opacity-50 text-xs xl:text-sm whitespace-nowrap">
+                      No Mixes no Blends
+                    </p>
+                  </div>
                 </div>
-                <div className="flex flex-col items-center">
+                <div className="flex max-xs:gap-3 xs:flex-col items-center">
                   <div className="size-10 bg-main/10 text-main rounded-full flex items-center justify-center">
                     <LuCoins />
                   </div>
-                  <h3 className="font-bold max-lg:text-lg max-xl:text-sm whitespace-nowrap">
-                    3 Day Guarrantee
-                  </h3>
-                  <p className="opacity-50 lg:text-xs xl:text-sm whitespace-nowrap">
-                    Love it or full refund
-                  </p>
+                  <div className="xs:text-center">
+                    <h3 className="font-bold max-lg:text-base max-xl:text-sm whitespace-nowrap">
+                      3 Day Guarrantee
+                    </h3>
+                    <p className="opacity-50 text-xs xl:text-sm whitespace-nowrap">
+                      Love it or full refund
+                    </p>
+                  </div>
                 </div>
-                <div className="flex flex-col items-center">
+                <div className="flex max-xs:gap-3 xs:flex-col items-center">
                   <div className="size-10 bg-main/10 text-main rounded-full flex items-center justify-center">
                     <LuTruck />
                   </div>
-                  <h3 className="font-bold max-lg:text-lg max-xl:text-sm whitespace-nowrap">
-                    Free Shipping
-                  </h3>
-                  <p className="opacity-50 lg:text-xs xl:text-sm whitespace-nowrap">
-                    On orders over $50
-                  </p>
+                  <div className="xs:text-center">
+                    <h3 className="font-bold max-lg:text-base max-xl:text-sm whitespace-nowrap">
+                      Free Shipping
+                    </h3>
+                    <p className="opacity-50 text-xs xl:text-sm whitespace-nowrap">
+                      On orders over $50
+                    </p>
+                  </div>
                 </div>
               </div>
               <div className="divider divider-horizontal"></div>

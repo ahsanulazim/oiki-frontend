@@ -9,8 +9,6 @@ import {
 } from "react-icons/fa6";
 
 const ProductInfo = ({ product }) => {
-  console.log(product);
-
   return (
     <section className="mt-3 px-5">
       <div className="max-w-360 mx-auto w-full">

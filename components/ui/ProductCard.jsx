@@ -5,7 +5,9 @@ const ProductCard = ({ product }) => {
     <div className="card shadow-sm overflow-clip">
       <Link href={`/products/${product.category}/${product.slug}`}>
         <figure className="relative">
-          <div className="badge badge-success absolute top-3 left-3">New</div>
+          <div className="badge badge-success max-md:badge-sm absolute top-3 left-3">
+            New
+          </div>
           <img
             src={
               product.productImages[0] || product.variantDetails[0].swatchImage

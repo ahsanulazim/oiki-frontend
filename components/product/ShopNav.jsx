@@ -13,7 +13,7 @@ const ShopNav = ({ category, product }) => {
               </Link>
             </li>
             <li>
-              <Link href={`/products/${category}`}>Kurti</Link>
+              <Link href={`/products/${category}`}>{category}</Link>
             </li>
             <li>{product?.productName}</li>
           </ul>

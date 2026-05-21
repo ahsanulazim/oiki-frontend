@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { LuCloudUpload, LuX } from "react-icons/lu";
 import Variations from "./Variations";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -9,19 +9,20 @@ import { createProduct } from "@/api/productApi";
 import { toast } from "react-toastify";
 import Editor from "./Editor";
 
-const ProductForm = ({ ref }) => {
+const ProductForm = ({ ref, setIsPending }) => {
   const {
     register,
     reset,
     control,
     handleSubmit,
-    watch,
     setValue,
     getValues,
-    formState: { errors, isDirty },
+    formState,
   } = useForm();
+  const { errors, isSubmitted } = formState;
 
   const queryClient = useQueryClient();
+  const [variationKey, setVariationKey] = useState(0);
 
   const mutation = useMutation({
     mutationFn: createProduct,
@@ -31,11 +32,18 @@ const ProductForm = ({ ref }) => {
       reset();
       setImages([]);
       setCoverIndex(0);
+      setVariationKey((prev) => prev + 1);
     },
     onError: () => {
       toast.error("Failed to create product");
     },
   });
+
+  useEffect(() => {
+    if (setIsPending) {
+      setIsPending(mutation.isPending);
+    }
+  }, [mutation.isPending, setIsPending]);
 
   const onSubmit = (data) => {
     console.log(data);
@@ -74,8 +82,15 @@ const ProductForm = ({ ref }) => {
   };
 
   useEffect(() => {
-    setValue("productImages", images);
-  }, [images, setValue]);
+    register("productImages", {
+      validate: (value) =>
+        (value && value.length > 0) || "Upload at least one product image",
+    });
+  }, [register]);
+
+  useEffect(() => {
+    setValue("productImages", images, { shouldValidate: isSubmitted });
+  }, [images, setValue, isSubmitted]);
 
   return (
     <form
@@ -149,6 +164,7 @@ const ProductForm = ({ ref }) => {
           )}
         </div>
         <Variations
+          key={variationKey}
           register={register}
           control={control}
           setValue={setValue}
@@ -200,9 +216,9 @@ const ProductForm = ({ ref }) => {
               ))}
             </div>
           )}
-          {images.length === 0 && (
+          {errors.productImages && (
             <p className="text-red-600 text-sm mt-2">
-              Upload at least one product image
+              {errors.productImages.message}
             </p>
           )}
         </div>

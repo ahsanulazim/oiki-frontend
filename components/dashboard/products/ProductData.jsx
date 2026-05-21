@@ -1,18 +1,13 @@
 "use client";
 
-import { getAllProducts } from "@/api/productApi";
-import { useQuery } from "@tanstack/react-query";
 import { LuStar, LuTrash2 } from "react-icons/lu";
 import ProductDeleteModal from "./ProductDeleteModal";
-import { useRef } from "react";
+import { useContext, useRef } from "react";
+import { MyContext } from "@/context/MyProvider";
 
 const ProductData = () => {
   const productRef = useRef();
-
-  const { data: products, isLoading } = useQuery({
-    queryKey: ["products"],
-    queryFn: getAllProducts,
-  });
+  const { products, productsLoading } = useContext(MyContext);
 
   return (
     <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
@@ -35,7 +30,7 @@ const ProductData = () => {
           </tr>
         </thead>
         <tbody>
-          {isLoading ? (
+          {productsLoading ? (
             <tr>
               <td colSpan="8" className="text-center">
                 Loading...

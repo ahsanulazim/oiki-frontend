@@ -9,6 +9,7 @@ import {
 } from "react-icons/lu";
 import Search from "./Search";
 import { FaMoon } from "react-icons/fa6";
+import Cart from "./Cart";
 
 const Navbar = () => {
   return (
@@ -61,12 +62,7 @@ const Navbar = () => {
           <button className="btn btn-ghost btn-circle">
             <LuHeart className="h-5 w-5" />
           </button>
-          <button className="btn btn-ghost btn-circle max-lg:hidden">
-            <div className="indicator">
-              <LuShoppingBag className="h-5 w-5" />
-              <span className="badge badge-xs badge-primary indicator-item bg-main border-main"></span>
-            </div>
-          </button>
+          <Cart />
         </div>
       </div>
     </header>

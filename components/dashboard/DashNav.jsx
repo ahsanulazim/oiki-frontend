@@ -1,9 +1,11 @@
+import Link from "next/link";
 import UserDropdown from "./UserDropdown";
+import Image from "next/image";
 
 const DashNav = () => {
   return (
     <header className="navbar bg-base-100 shadow-sm">
-      <div className="flex-1">
+      <div className="flex-1 flex items-center">
         <label
           htmlFor="my-drawer-4"
           aria-label="open sidebar"
@@ -25,7 +27,15 @@ const DashNav = () => {
             <path d="M14 10l2 2l-2 2"></path>
           </svg>
         </label>
-        <a className="btn btn-ghost text-xl">daisyUI</a>
+        <Link href="/dashboard">
+          <Image
+            src="/assets/oiki-logo.svg"
+            alt="oiki logo"
+            width={60}
+            height={28}
+            className=""
+          />
+        </Link>
       </div>
       <div className="flex-none">
         <div className="dropdown dropdown-end">

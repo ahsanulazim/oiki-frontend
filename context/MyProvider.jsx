@@ -1,7 +1,10 @@
 "use client";
+import { getAllProducts } from "@/api/productApi";
 import { auth } from "@/firebase/firebase.config";
+import { useQuery } from "@tanstack/react-query";
 import { onAuthStateChanged } from "firebase/auth";
 import { createContext, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export const MyContext = createContext();
 
@@ -43,7 +46,131 @@ const MyProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  const data = { newUser, setNewUser, loading };
+  //products fetching
+  const { data: products, isLoading: productsLoading } = useQuery({
+    queryKey: ["products"],
+    queryFn: getAllProducts,
+  });
+
+  //cart logic
+  const [cartItems, setCartItems] = useState([]);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // 1. Load cart items from localStorage on initial render safely
+  useEffect(() => {
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      try {
+        setCartItems(JSON.parse(storedCart));
+      } catch (error) {
+        console.error("Cart storage parsing error:", error);
+      }
+    }
+    setIsHydrated(true);
+  }, []);
+
+  // 2. After initial hydration, save cart items to localStorage whenever they change
+  useEffect(() => {
+    if (isHydrated) {
+      localStorage.setItem("cart", JSON.stringify(cartItems));
+    }
+  }, [cartItems, isHydrated]);
+
+  // 3. Add function to update cart items
+  const addToCart = (product, variant, size, quantity) => {
+    const cartItemId = `${product._id}-${variant.color}-${size}`;
+
+    // Check if product variant already exists in cart
+    const existingCartItem = cartItems.find((item) => item.id === cartItemId);
+
+    const activeSizeDetail = variant?.sizes?.find((s) => s.size === size);
+    const stock = activeSizeDetail ? activeSizeDetail.stock : 0;
+
+    if (existingCartItem) {
+      // If exists, update the quantity
+      const newQuantiy = existingCartItem.quantity + quantity;
+
+      if (newQuantiy > stock) {
+        toast.error("Product is out of stock");
+        return false;
+      }
+      setCartItems((prevCartItems) =>
+        prevCartItems.map((item) =>
+          item.id === cartItemId ? { ...item, quantity: newQuantiy } : item,
+        ),
+      );
+    } else {
+      if (quantity > stock) {
+        toast.error("Product is out of stock");
+        return false;
+      }
+      // If not exists, add new item to cart
+      const newCartItem = {
+        id: cartItemId,
+        productId: product._id,
+        productName: product.productName,
+        color: variant.color,
+        size: size,
+        quantity: quantity,
+        price: activeSizeDetail?.discount
+          ? activeSizeDetail.discount
+          : activeSizeDetail?.price
+            ? activeSizeDetail.price
+            : product.discount
+              ? product.discount
+              : product.price,
+        image: variant?.imageGallery?.[0],
+        stock: stock,
+      };
+      setCartItems((prevCartItems) => [...prevCartItems, newCartItem]);
+    }
+    return true;
+  };
+
+  const removeFromCart = (id) => {
+    setCartItems((prevCartItems) =>
+      prevCartItems.filter((item) => item.id !== id),
+    );
+  };
+
+  const updateCartItemQuantity = (id, quantity) => {
+    setCartItems((prevCartItems) =>
+      prevCartItems.map((item) =>
+        item.id === id ? { ...item, quantity: quantity } : item,
+      ),
+    );
+  };
+
+  const calculateTotalPrice = () => {
+    if (cartItems.length === 0) {
+      return 0;
+    }
+    return cartItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0,
+    );
+  };
+
+  const calculateTotalItem = () => {
+    if (cartItems.length === 0) {
+      return 0;
+    }
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const data = {
+    newUser,
+    setNewUser,
+    loading,
+    products,
+    productsLoading,
+    cartItems,
+    addToCart,
+    removeFromCart,
+    updateCartItemQuantity,
+    calculateTotalPrice,
+    calculateTotalItem,
+  };
 
   return <MyContext value={data}>{children}</MyContext>;
 };

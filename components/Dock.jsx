@@ -15,10 +15,10 @@ const Dock = () => {
         <span className="dock-label">EID 2K26</span>
       </button>
 
-      <button>
+      <Link href="/cart">
         <LuShoppingBag className="size-[1.2em]" />
         <span className="dock-label">Cart</span>
-      </button>
+      </Link>
       <Link href="/login">
         <LuUser className="size-[1.2em]" />
         <span className="dock-label">Account</span>

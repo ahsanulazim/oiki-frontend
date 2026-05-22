@@ -59,7 +59,7 @@ const Navbar = () => {
           <button className="btn btn-ghost btn-circle lg:hidden">
             <LuSearch className="h-5 w-5" />
           </button>
-          <button className="btn btn-ghost btn-circle">
+          <button className="btn btn-ghost btn-circle max-lg:hidden">
             <LuHeart className="h-5 w-5" />
           </button>
           <Cart />

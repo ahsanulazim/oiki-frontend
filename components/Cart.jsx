@@ -11,11 +11,7 @@ const Cart = () => {
 
   return (
     <div className="dropdown dropdown-end">
-      <div
-        tabIndex={0}
-        role="button"
-        className="btn btn-circle btn-ghost max-lg:hidden"
-      >
+      <div tabIndex={0} role="button" className="btn btn-circle btn-ghost">
         <div className="indicator">
           <LuShoppingBag className="h-5 w-5" />
           {calculateTotalItem() > 0 && (
@@ -26,7 +22,7 @@ const Cart = () => {
         </div>
       </div>
       <div
-        className={`dropdown-content bg-base-100 rounded-box z-1 w-90 shadow-sm `}
+        className={`dropdown-content bg-base-100 rounded-box z-1 w-75 xs:w-90 shadow-sm `}
         tabIndex="-1"
       >
         <ul
@@ -72,23 +68,25 @@ const Cart = () => {
           )}
         </ul>
 
-        <div className="p-3 border-t border-base-300">
-          <p className="mb-2">
-            Total:{" "}
-            <span className="font-bold">
-              <TakaSymbol />
-              {calculateTotalPrice()}
-            </span>
-          </p>
-          <div className="flex gap-3">
-            <Link href="/cart" className="flex-1">
-              <button className="btn btn-main btn-sm w-full">Cart</button>
-            </Link>
-            <Link href="/checkout" className="flex-1">
-              <button className="btn btn-main btn-sm w-full">Checkout</button>
-            </Link>
+        {cartItems.length > 0 && (
+          <div className="p-3 border-t border-base-300">
+            <p className="mb-2">
+              Total:{" "}
+              <span className="font-bold">
+                <TakaSymbol />
+                {calculateTotalPrice()}
+              </span>
+            </p>
+            <div className="flex gap-3">
+              <Link href="/cart" className="flex-1">
+                <button className="btn btn-main btn-sm w-full">Cart</button>
+              </Link>
+              <Link href="/cart/checkout" className="flex-1">
+                <button className="btn btn-main btn-sm w-full">Checkout</button>
+              </Link>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import TakaSymbol from "./TakaSymbol";
 
 const ProductCard = ({ product }) => {
   return (
@@ -24,7 +25,7 @@ const ProductCard = ({ product }) => {
           </h2>
         </Link>
         <p className="font-bold text-sm xs:text-lg">
-          <span className="font-hind-siliguri">৳</span>
+          <TakaSymbol />
           {product.price}
         </p>
         <div className="card-actions justify-end">

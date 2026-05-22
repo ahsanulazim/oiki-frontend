@@ -44,7 +44,7 @@ const page = () => {
                 <CartedItems />
               </div>
               <div className="col-span-1">
-                <Overview />
+                <Overview isCheckout={false} />
               </div>
             </>
           )}

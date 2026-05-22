@@ -3,8 +3,9 @@
 import { useContext } from "react";
 import TakaSymbol from "../ui/TakaSymbol";
 import { MyContext } from "@/context/MyProvider";
+import Link from "next/link";
 
-const Overview = () => {
+const Overview = ({ isCheckout }) => {
   const { calculateTotalPrice } = useContext(MyContext);
 
   return (
@@ -24,13 +25,39 @@ const Overview = () => {
         <div>
           <h3 className="flex justify-between">
             <span>Total: </span>
-            <span className="font-bold">
+            <span className="font-bold text-xl text-main">
               <TakaSymbol /> {calculateTotalPrice()}
             </span>
           </h3>
         </div>
       </div>
-      <button className="btn btn-main w-full">Checkout</button>
+      {isCheckout && (
+        <>
+          <label className="label mb-5">
+            <input type="checkbox" defaultChecked className="checkbox" />
+            <span className="text-wrap">
+              {" "}
+              I have read and agree to the{" "}
+              <Link href="#" className="link link-hover text-main">
+                {" "}
+                Terms and Conditions,{" "}
+              </Link>
+              <Link href="#" className="link link-hover text-main">
+                Privacy Policy
+              </Link>{" "}
+              and{" "}
+              <Link href="#" className="link link-hover text-main">
+                Refund and Return Policy
+              </Link>
+            </span>
+          </label>
+        </>
+      )}
+      <Link href={isCheckout ? "#" : "/cart/checkout"}>
+        <button className="btn btn-main w-full">
+          {isCheckout ? "Confirm Order" : "Checkout"}
+        </button>
+      </Link>
     </div>
   );
 };

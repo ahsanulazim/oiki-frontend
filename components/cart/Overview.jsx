@@ -24,6 +24,15 @@ const Overview = ({ isCheckout }) => {
         <div className="divider"></div>
         <div>
           <h3 className="flex justify-between">
+            <span>Shipping: </span>
+            <span className="font-bold">
+              <TakaSymbol /> {calculateTotalPrice()}
+            </span>
+          </h3>
+        </div>
+        <div className="divider"></div>
+        <div>
+          <h3 className="flex justify-between">
             <span>Total: </span>
             <span className="font-bold text-xl text-main">
               <TakaSymbol /> {calculateTotalPrice()}

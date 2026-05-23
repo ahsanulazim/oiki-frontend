@@ -1,8 +1,15 @@
-import { useForm } from "react-hook-form";
-import districts from "@/json/districts.json";
+import { Controller, useForm } from "react-hook-form";
 import Select from "react-select";
+import { useContext, useEffect } from "react";
+import { MyContext } from "@/context/MyProvider";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createOrder } from "@/api/orderApi";
+import { toast } from "react-toastify";
 
-const ShippingForm = () => {
+const ShippingForm = ({ ref, setIsPending, paymentMethod }) => {
+  const { locations, locationsLoading, setDeliveryAdd, cartItems, newUser } =
+    useContext(MyContext);
+
   const {
     handleSubmit,
     register,
@@ -22,21 +29,59 @@ const ShippingForm = () => {
     },
   });
 
-  const districtOptions = districts.map((district) => ({
-    value: district.name.en,
-    label: district.name.en,
-  }));
+  const districtOptions = locationsLoading
+    ? [{ value: "", label: "Loading...", isDisabled: true }]
+    : locations?.map((location) => ({
+        value: location?.id,
+        label: location?.name?.en,
+      }));
+
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: createOrder,
+    onSuccess: (data) => {
+      if (paymentMethod === "cod") {
+        queryClient.invalidateQueries({ queryKey: ["orders"] });
+        toast.success("Order Created Successfully");
+        reset();
+      } else if (paymentMethod === "online") {
+        if (data?.paymentUrl) {
+          window.location.href = data.paymentUrl;
+        } else {
+          toast.error("Payment session creation failed");
+        }
+      }
+    },
+    onError: (error) => {
+      toast.error(error.response.data.message);
+    },
+  });
+
+  useEffect(() => {
+    if (setIsPending) {
+      setIsPending(isPending);
+    }
+  }, [isPending, setIsPending]);
 
   const onSubmit = (data) => {
-    console.log(data);
+    const orderData = {
+      user: newUser ? newUser.user : "guest",
+      customer: data,
+      products: cartItems,
+      paymentMethod,
+    };
+
+    console.log(orderData);
+    mutate(orderData);
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="fieldset">
+    <form ref={ref} onSubmit={handleSubmit(onSubmit)} className="fieldset">
       <div className="flex justify-baseline items-center gap-5">
         <div className="fieldset flex-1">
           <label htmlFor="firstName" className="label">
-            First Name
+            First Name<span className="text-red-600">*</span>
           </label>
           <input
             type="text"
@@ -49,7 +94,7 @@ const ShippingForm = () => {
         </div>
         <div className="fieldset flex-1">
           <label htmlFor="lastName" className="label">
-            Last Name
+            Last Name<span className="text-red-600">*</span>
           </label>
           <input
             type="text"
@@ -62,7 +107,7 @@ const ShippingForm = () => {
         </div>
       </div>
       <label htmlFor="address" className="label">
-        Address
+        Address<span className="text-red-600">*</span>
       </label>
       <input
         type="text"
@@ -75,7 +120,7 @@ const ShippingForm = () => {
       <div className="flex justify-baseline items-center gap-5">
         <div className="fieldset flex-1">
           <label htmlFor="thana" className="label">
-            Upazilla/Thana
+            Upazilla/Thana<span className="text-red-600">*</span>
           </label>
           <input
             type="text"
@@ -88,14 +133,28 @@ const ShippingForm = () => {
         </div>
         <div className="fieldset flex-1">
           <label htmlFor="district" className="label">
-            District
+            District<span className="text-red-600">*</span>
           </label>
-          <Select
-            defaultValue={districtOptions[17]}
-            options={districtOptions}
-            label="District"
+          <Controller
             name="district"
             control={control}
+            rules={{ required: "District is required" }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                options={districtOptions}
+                placeholder="Select District"
+                // এখানে value কে option object বানাও
+                value={
+                  districtOptions.find((opt) => opt.value === field.value) ||
+                  null
+                }
+                onChange={(selected) => {
+                  field.onChange(selected.value); // form state update হবে
+                  setDeliveryAdd(selected.value); // context এও যাবে
+                }}
+              />
+            )}
           />
           {errors.district && (
             <p className="text-red-600">{errors.district.message}</p>
@@ -105,7 +164,7 @@ const ShippingForm = () => {
       <div className="flex justify-baseline items-center gap-5">
         <div className="fieldset flex-1">
           <label htmlFor="phone" className="label">
-            Phone
+            Phone<span className="text-red-600">*</span>
           </label>
           <input
             type="tel"
@@ -123,7 +182,13 @@ const ShippingForm = () => {
           <input
             type="email"
             className="input w-full"
-            {...register("email", { required: "Email is Required" })}
+            {...register("email", {
+              required: false,
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Invalid email format",
+              },
+            })}
           />
           {errors.email && (
             <p className="text-red-600">{errors.email.message}</p>

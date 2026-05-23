@@ -2,21 +2,31 @@
 
 import Link from "next/link";
 import { LuHouse } from "react-icons/lu";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { MyContext } from "@/context/MyProvider";
 import { useRouter } from "next/navigation";
 import ShippingForm from "@/components/cart/checkout/ShippingForm";
 import Overview from "@/components/cart/Overview";
+import Spinner from "@/components/skeleton/Spinner";
+import PaymentMethod from "@/components/cart/checkout/PaymentMethod";
 
 const page = () => {
   const router = useRouter();
-  const { cartItems } = useContext(MyContext);
+  const { cartItems, isHydrated } = useContext(MyContext);
+  const [isPending, setIsPending] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("cod");
 
   useEffect(() => {
-    if (cartItems.length === 0) {
+    if (isHydrated && cartItems.length === 0) {
       router.push("/cart");
     }
-  }, [cartItems, router]);
+  }, [isHydrated, cartItems, router]);
+
+  const checkoutRef = useRef(null);
+
+  if (!isHydrated) {
+    return <Spinner />;
+  }
 
   return (
     <>
@@ -38,18 +48,33 @@ const page = () => {
         </div>
       </section>
       <section className="px-5 mb-5">
-        <div className="max-w-360 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <div className="lg:col-span-2">
-            <div className="border border-base-300 p-5 rounded-box">
+        <div className="max-w-360 mx-auto grid grid-cols-1 lg:grid-cols-8 gap-5">
+          <div className="lg:col-span-4">
+            <div className="bg-base-100 p-5 rounded-box">
               <h2 className="text-xl font-bold">Shipping & Billing</h2>
               <div className="divider"></div>
               <div>
-                <ShippingForm />
+                <ShippingForm
+                  ref={checkoutRef}
+                  setIsPending={setIsPending}
+                  paymentMethod={paymentMethod}
+                />
               </div>
             </div>
           </div>
-          <div className="lg:col-span-1">
-            <Overview isCheckout={true} />
+          <div className="lg:col-span-2">
+            <PaymentMethod
+              paymentMethod={paymentMethod}
+              setPaymentMethod={setPaymentMethod}
+            />
+          </div>
+          <div className="lg:col-span-2">
+            <Overview
+              paymentMethod={paymentMethod}
+              ref={checkoutRef}
+              isCheckout={true}
+              isPending={isPending}
+            />
           </div>
         </div>
       </section>

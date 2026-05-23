@@ -23,9 +23,9 @@ export const createShippingRate = async (shippingData) => {
   return data;
 };
 
-export const getShippingRateById = async (id) => {
+export const getShippingRateByDistrict = async (id) => {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/shippingRates/getShippingRateById/${id}`,
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/shippingRates/getShippingRateByDistrict/?district=${district}`,
     {
       method: "GET",
       headers: { "Content-Type": "application/json" },

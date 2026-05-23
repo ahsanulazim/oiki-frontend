@@ -172,6 +172,21 @@ const MyProvider = ({ children }) => {
     queryFn: getAllShippingRates,
   });
 
+  const [deliveryAdd, setDeliveryAdd] = useState(null);
+
+  //get delivery charge
+  const [shippingPrice, setShippingPrice] = useState(null);
+
+  useEffect(() => {
+    if (deliveryAdd) {
+      fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/shippingRates/getShippingRateByDistrict?district=${deliveryAdd}`,
+      )
+        .then((res) => res.json())
+        .then((data) => setShippingPrice(data));
+    }
+  }, [deliveryAdd]);
+
   const data = {
     newUser,
     setNewUser,
@@ -179,6 +194,7 @@ const MyProvider = ({ children }) => {
     products,
     productsLoading,
     cartItems,
+    isHydrated,
     addToCart,
     removeFromCart,
     updateCartItemQuantity,
@@ -188,6 +204,9 @@ const MyProvider = ({ children }) => {
     locationsLoading,
     shippingRates,
     shippingRatesLoading,
+    deliveryAdd,
+    setDeliveryAdd,
+    shippingPrice,
   };
 
   return <MyContext value={data}>{children}</MyContext>;

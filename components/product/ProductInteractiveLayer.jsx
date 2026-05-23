@@ -79,21 +79,21 @@ const ProductInteractiveLayer = ({ product }) => {
         </h1>
         {/* PRICE DISPLAY BLOCK (Dynamic Discount Check) */}
         <div className="">
-          {product?.discount ? (
+          {activeSizeDetail?.discount ? (
             <div className="flex items-baseline gap-3">
               <span className="font-bold text-2xl lg:text-3xl text-main">
                 <span className="font-hind-siliguri">৳</span>
-                {product?.discount}
+                {activeSizeDetail?.discount}
               </span>
               <span className="line-through text-sm opacity-50">
                 <span className="font-hind-siliguri">৳</span>
-                {product?.price}
+                {activeSizeDetail?.price}
               </span>
             </div>
           ) : (
             <span className="font-bold text-2xl lg:text-3xl text-main">
               <span className="font-hind-siliguri">৳</span>
-              {product?.price}
+              {activeSizeDetail?.price}
             </span>
           )}
         </div>

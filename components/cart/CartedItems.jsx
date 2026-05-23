@@ -9,7 +9,7 @@ const CartedItems = () => {
     useContext(MyContext);
 
   return (
-    <div className="border border-base-300 rounded-box p-5">
+    <div className="bg-base-100 rounded-box p-5">
       <h2 className="font-bold text-xl">Your Products</h2>
       <div className="divider"></div>
       <div className="flex flex-col gap-5">

@@ -3,7 +3,7 @@ import TakaSymbol from "./TakaSymbol";
 
 const ProductCard = ({ product }) => {
   return (
-    <div className="card shadow-sm overflow-clip">
+    <div className="card bg-base-100 shadow-sm overflow-clip">
       <Link href={`/products/${product.category}/${product.slug}`}>
         <figure className="relative">
           <div className="badge badge-success max-md:badge-sm absolute top-3 left-3">

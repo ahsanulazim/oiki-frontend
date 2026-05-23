@@ -46,7 +46,7 @@ const AttributeTable = () => {
                 <td>{attribute.name}</td>
                 <td>{attribute.slug}</td>
                 <td>
-                  <span className="badge badge-info">
+                  <span className="badge badge-info badge-soft border-info">
                     {attribute.attributeType}
                   </span>
                 </td>
@@ -58,12 +58,12 @@ const AttributeTable = () => {
                     />
                     <Link
                       href={`/dashboard/attributes/${attribute.slug}`}
-                      className="btn btn-success btn-square"
+                      className="btn btn-success btn-circle btn-soft"
                     >
                       <LuEye />
                     </Link>
                     <button
-                      className="btn btn-error btn-square"
+                      className="btn btn-error btn-circle btn-soft"
                       onClick={() => attributeDeleteRef.current.showModal()}
                     >
                       <LuTrash2 />

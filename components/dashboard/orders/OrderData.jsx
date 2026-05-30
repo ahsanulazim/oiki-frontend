@@ -7,6 +7,7 @@ import moment from "moment/moment";
 import { LuEye, LuSearch, LuSquarePen, LuTrash2 } from "react-icons/lu";
 import OrderDeleteModal from "./OrderDeleteModal";
 import { useRef, useState } from "react";
+import Link from "next/link";
 
 const TABS = [
   { key: "all", label: "All" },
@@ -180,9 +181,12 @@ const OrderData = () => {
                     <td>
                       <div className="flex">
                         <OrderDeleteModal id={order._id} ref={orderRef} />
-                        <button className="btn btn-circle btn-ghost btn-success">
+                        <Link
+                          href={`/dashboard/orders/${order._id}`}
+                          className="btn btn-circle btn-ghost btn-success"
+                        >
                           <LuEye />
-                        </button>
+                        </Link>
                         <button className="btn btn-circle btn-ghost btn-info">
                           <LuSquarePen />
                         </button>

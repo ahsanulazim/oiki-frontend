@@ -5,6 +5,7 @@ import CategoryNav from "./CategoryNav";
 import TakaSymbol from "../ui/TakaSymbol";
 import { useQuery } from "@tanstack/react-query";
 import { fetchFilters } from "@/api/productApi";
+import AllProducts from "./AllProducts";
 
 const Range = dynamic(() => import("react-range").then((mod) => mod.Range), {
   ssr: false,
@@ -41,9 +42,7 @@ const Filter = ({ category }) => {
                 type="checkbox"
                 className="drawer-toggle"
               />
-              <div className="drawer-content col-start-1 flex flex-col items-center justify-center">
-                {/* Page content here */}
-              </div>
+              <div className="drawer-content col-start-1 flex flex-col items-center justify-center"></div>
               <div className="drawer-side z-40">
                 <label
                   htmlFor="my-drawer-3"
@@ -172,6 +171,7 @@ const Filter = ({ category }) => {
           </div>
           <div className="col-span-4">
             <CategoryNav category={category} />
+            <AllProducts category={category} />
           </div>
         </div>
       </div>

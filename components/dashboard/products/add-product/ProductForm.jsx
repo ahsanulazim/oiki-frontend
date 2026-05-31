@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { LuCloudUpload, LuX } from "react-icons/lu";
 import Variations from "./Variations";
@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createProduct } from "@/api/productApi";
 import { toast } from "react-toastify";
 import Editor from "./Editor";
+import { MyContext } from "@/context/MyProvider";
 
 const ProductForm = ({ ref, setIsPending }) => {
   const {
@@ -23,6 +24,8 @@ const ProductForm = ({ ref, setIsPending }) => {
 
   const queryClient = useQueryClient();
   const [variationKey, setVariationKey] = useState(0);
+  const { categories, categoriesLoading, categoriesError } =
+    useContext(MyContext);
 
   const mutation = useMutation({
     mutationFn: createProduct,
@@ -254,9 +257,21 @@ const ProductForm = ({ ref, setIsPending }) => {
             <option value="" disabled={true}>
               Select a Category
             </option>
-            <option value="kurti">Kurti</option>
-            <option value="three-piece">Three-piece</option>
-            <option value="two-piece">Two-piece</option>
+            {categoriesLoading ? (
+              <option value="" disabled={true}>
+                Loading Categories...
+              </option>
+            ) : categoriesError ? (
+              <option value="" disabled={true}>
+                Error Loading Categories
+              </option>
+            ) : (
+              categories?.map((category) => (
+                <option key={category.slug} value={category.slug}>
+                  {category.name}
+                </option>
+              ))
+            )}
           </select>
           {errors.category && (
             <p className="text-red-600">{errors.category.message}</p>

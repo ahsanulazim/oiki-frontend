@@ -9,6 +9,7 @@ import {
   LuBox,
   LuFileBox,
   LuLayoutDashboard,
+  LuNotebook,
   LuSwatchBook,
   LuTruck,
 } from "react-icons/lu";
@@ -83,6 +84,17 @@ const Layout = ({ children }) => {
             </li>
 
             {/* List item */}
+            <li>
+              <ActiveLink
+                href="/dashboard/categories"
+                className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                dataTip="Categories"
+              >
+                {/* Settings icon */}
+                <LuNotebook className="my-1.5 inline-block size-4" />
+                <span className="is-drawer-close:hidden">Categories</span>
+              </ActiveLink>
+            </li>
             <li>
               <ActiveLink
                 href="/dashboard/attributes"

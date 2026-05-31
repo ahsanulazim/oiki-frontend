@@ -1,4 +1,5 @@
 "use client";
+import { getAllCategories } from "@/api/categoryApi";
 import { getAllLocations } from "@/api/locationApi";
 import { getAllProducts } from "@/api/productApi";
 import { getAllShippingRates } from "@/api/shippingApi";
@@ -187,6 +188,17 @@ const MyProvider = ({ children }) => {
     }
   }, [deliveryAdd]);
 
+  //categories
+
+  const {
+    data: categories,
+    isLoading: categoriesLoading,
+    isError: categoriesError,
+  } = useQuery({
+    queryKey: ["categories"],
+    queryFn: getAllCategories,
+  });
+
   const data = {
     newUser,
     setNewUser,
@@ -207,6 +219,9 @@ const MyProvider = ({ children }) => {
     deliveryAdd,
     setDeliveryAdd,
     shippingPrice,
+    categories,
+    categoriesLoading,
+    categoriesError,
   };
 
   return <MyContext value={data}>{children}</MyContext>;

@@ -2,6 +2,11 @@ import TakaSymbol from "@/components/ui/TakaSymbol";
 import OrderDataAccordion from "../OrderDataAccordion";
 
 const OrderSummary = ({ order }) => {
+  const totalProducts = order.products.reduce(
+    (sum, item) => sum + item.quantity,
+    0,
+  );
+
   return (
     <OrderDataAccordion
       title={"Order Summary"}
@@ -14,8 +19,7 @@ const OrderSummary = ({ order }) => {
             <div className="flex-2">Subtotal</div>
             <div className="flex-1 flex justify-between items-center">
               <div>
-                {order.products.length}{" "}
-                {order.products.length === 1 ? "Item" : "Items"}
+                {totalProducts} {totalProducts === 1 ? "Item" : "Items"}
               </div>
               <div>
                 <TakaSymbol />

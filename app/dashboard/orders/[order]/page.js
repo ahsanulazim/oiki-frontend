@@ -9,6 +9,7 @@ import {
   LuMail,
   LuPhone,
   LuShoppingBasket,
+  LuSquarePen,
   LuTruck,
   LuUser,
   LuX,
@@ -80,7 +81,14 @@ const page = async ({ params }) => {
               </ul>
             </OrderDataCard>
             <OrderDataCard>
-              <h3 className="p-4 pb-2 font-semibold">Contact Information</h3>
+              <div className="flex items-center justify-between p-4 pb-2">
+                <h3 className="font-semibold">Contact Information</h3>
+                <div className="tooltip tooltip-left" data-tip="Edit Contact">
+                  <button className="btn btn-sm btn-square btn-info">
+                    <LuSquarePen />
+                  </button>
+                </div>
+              </div>
               <ul className="flex flex-col gap-1 p-4 pt-0 opacity-70 text-sm">
                 <li className="flex items-center gap-2">
                   <div>
@@ -102,7 +110,27 @@ const page = async ({ params }) => {
               </ul>
             </OrderDataCard>
             <OrderDataCard>
-              <h3 className="p-4 pb-2 font-semibold">Shipping Address</h3>
+              <div className="flex items-center justify-between p-4 pb-2">
+                <h3 className="font-semibold">Shipping Address</h3>
+                <div className="flex items-center gap-2">
+                  <div
+                    className="tooltip tooltip-left"
+                    data-tip="Change Address"
+                  >
+                    <button className="btn btn-sm btn-square btn-info">
+                      <LuSquarePen />
+                    </button>
+                  </div>
+                  <div
+                    className="tooltip tooltip-left"
+                    data-tip="Send to Courier"
+                  >
+                    <button className="btn btn-sm btn-square btn-success">
+                      <LuTruck />
+                    </button>
+                  </div>
+                </div>
+              </div>
               <ul className="flex flex-col gap-1 p-4 pt-0 opacity-70 text-sm">
                 <li className="flex items-center gap-2">
                   <div>

@@ -4,7 +4,7 @@ import { getAllOrderData } from "@/api/orderApi";
 import TakaSymbol from "@/components/ui/TakaSymbol";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment/moment";
-import { LuEye, LuSearch, LuSquarePen, LuTrash2 } from "react-icons/lu";
+import { LuEye, LuSearch, LuTrash2, LuTruck } from "react-icons/lu";
 import OrderDeleteModal from "./OrderDeleteModal";
 import { useRef, useState } from "react";
 import Link from "next/link";
@@ -188,13 +188,18 @@ const OrderData = () => {
                         <OrderDeleteModal id={order._id} ref={orderRef} />
                         <Link
                           href={`/dashboard/orders/${order._id}`}
-                          className="btn btn-circle btn-ghost btn-success"
+                          className="btn btn-circle btn-ghost btn-info"
                         >
                           <LuEye />
                         </Link>
-                        <button className="btn btn-circle btn-ghost btn-info">
-                          <LuSquarePen />
-                        </button>
+                        <div
+                          className="tooltip tooltip-left"
+                          data-tip="Send to Courier"
+                        >
+                          <button className="btn btn-ghost btn-circle btn-success">
+                            <LuTruck />
+                          </button>
+                        </div>
                         <button
                           className="btn btn-circle btn-ghost btn-error"
                           onClick={() => orderRef.current.showModal()}

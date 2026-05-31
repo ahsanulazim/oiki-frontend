@@ -26,7 +26,7 @@ const OrderItems = ({ order }) => {
                   <p>Color - {product.color}</p>
                 </div>
               </div>
-              <div className="flex justify-between gap-20">
+              <div className="flex justify-between gap-10 font-bold">
                 <div>
                   {product.quantity} x <TakaSymbol />
                   {product.price}

@@ -1,17 +1,21 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import CategoryNav from "./CategoryNav";
 import TakaSymbol from "../ui/TakaSymbol";
 import { useQuery } from "@tanstack/react-query";
 import { fetchFilters } from "@/api/productApi";
 import AllProducts from "./AllProducts";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const Range = dynamic(() => import("react-range").then((mod) => mod.Range), {
   ssr: false,
 });
 
 const Filter = ({ category }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const {
     data: filters,
     isLoading,
@@ -29,7 +33,24 @@ const Filter = ({ category }) => {
     console.log(filters);
   }
 
-  const [price, setPrice] = useState([1, 100000]);
+  const [price, setPrice] = useState([0, 1]);
+
+  useEffect(() => {
+    if (filters?.maxPrice) {
+      setPrice([0, filters.maxPrice]);
+    }
+  }, [filters]);
+
+  // ✅ Helper: update query string instantly
+  const updateQuery = (key, value) => {
+    const query = new URLSearchParams(searchParams.toString());
+    if (value) {
+      query.set(key, value);
+    } else {
+      query.delete(key);
+    }
+    router.push(`/products/${category}?${query.toString()}`);
+  };
 
   return (
     <section className="px-5">
@@ -43,7 +64,7 @@ const Filter = ({ category }) => {
                 className="drawer-toggle"
               />
               <div className="drawer-content col-start-1 flex flex-col items-center justify-center"></div>
-              <div className="drawer-side z-40">
+              <div className="drawer-side h-auto max-lg:z-40">
                 <label
                   htmlFor="my-drawer-3"
                   aria-label="close sidebar"
@@ -57,10 +78,14 @@ const Filter = ({ category }) => {
                     <div>
                       <Range
                         step={1}
-                        min={1}
-                        max={100000}
+                        min={0}
+                        max={filters?.maxPrice}
                         values={price}
-                        onChange={(values) => setPrice(values)}
+                        onChange={(values) => {
+                          setPrice(values);
+                          updateQuery("minPrice", values[0]);
+                          updateQuery("maxPrice", values[1]);
+                        }}
                         renderTrack={({ props, children }) => (
                           <div
                             {...props}
@@ -98,6 +123,7 @@ const Filter = ({ category }) => {
                           type="radio"
                           name="stock"
                           className="radio radio-sm"
+                          onChange={() => updateQuery("stock", "in")}
                         />
                         In Stock
                       </label>
@@ -106,6 +132,7 @@ const Filter = ({ category }) => {
                           type="radio"
                           name="stock"
                           className="radio radio-sm"
+                          onChange={() => updateQuery("stock", "out")}
                         />
                         Out of Stock
                       </label>
@@ -115,54 +142,50 @@ const Filter = ({ category }) => {
                     <h4 className="text-lg font-bold">Size</h4>
                     <div className="divider mt-0"></div>
                     <div className="fieldset">
-                      <label className="label text-base-content">
-                        <input
-                          type="checkbox"
-                          name="size"
-                          className="checkbox checkbox-sm"
-                        />
-                        XS
-                      </label>
-                      <label className="label text-base-content">
-                        <input
-                          type="checkbox"
-                          name="size"
-                          className="checkbox checkbox-sm"
-                        />
-                        SM
-                      </label>
-                      <label className="label text-base-content">
-                        <input
-                          type="checkbox"
-                          name="size"
-                          className="checkbox checkbox-sm"
-                        />
-                        M
-                      </label>
-                      <label className="label text-base-content">
-                        <input
-                          type="checkbox"
-                          name="size"
-                          className="checkbox checkbox-sm"
-                        />
-                        LG
-                      </label>
-                      <label className="label text-base-content">
-                        <input
-                          type="checkbox"
-                          name="size"
-                          className="checkbox checkbox-sm"
-                        />
-                        XL
-                      </label>
-                      <label className="label text-base-content">
-                        <input
-                          type="checkbox"
-                          name="size"
-                          className="checkbox checkbox-sm"
-                        />
-                        XXL
-                      </label>
+                      {filters?.sizes?.map((size) => (
+                        <label className="label text-base-content" key={size}>
+                          <input
+                            type="checkbox"
+                            name="size"
+                            className="checkbox checkbox-sm"
+                            onChange={(e) => {
+                              const current =
+                                searchParams.get("sizes")?.split(",") || [];
+                              const updated = e.target.checked
+                                ? [...current, size]
+                                : current.filter((s) => s !== size);
+                              updateQuery("sizes", updated.join(","));
+                            }}
+                          />
+                          {size}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="mt-10">
+                    <h4 className="text-lg font-bold">Color</h4>
+                    <div className="divider mt-0"></div>
+                    <div className="fieldset">
+                      {filters?.colors?.map((color, i) => (
+                        <button
+                          key={i}
+                          onClick={() => {
+                            const current =
+                              searchParams.get("colors")?.split(",") || [];
+                            const updated = current.includes(color.color)
+                              ? current.filter((col) => col !== color.color)
+                              : [...current, color.color];
+                            updateQuery("colors", updated.join(","));
+                          }}
+                          className="flex items-center gap-2 cursor-pointer"
+                        >
+                          <div
+                            className="w-6 h-6 rounded-full"
+                            style={{ backgroundColor: color.hex }}
+                          ></div>
+                          <span>{color.color}</span>
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </div>

@@ -328,7 +328,7 @@ const Variations = ({ register, setValue, getValues, errors }) => {
                             (size, sizeIndex) => (
                               <div
                                 key={size.label}
-                                className="rounded-box border border-base-300 p-4"
+                                className="rounded-box border bg-base-300 border-base-300 p-4"
                               >
                                 <div className="mb-2 font-medium">
                                   {size.label}

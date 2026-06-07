@@ -74,10 +74,28 @@ export async function fetchFilters(category) {
   return res.json();
 }
 
-//get products by category
-export const getProductsByCategory = async (category, page, limit) => {
+//get products by filters
+export const getProductsByFilters = async (
+  category,
+  page,
+  limit,
+  filters = {},
+) => {
+  const query = new URLSearchParams({
+    category,
+    page,
+    limit,
+  });
+
+  // filters object থেকে truthy values গুলো query-তে add করো
+  if (filters.minPrice) query.set("minPrice", filters.minPrice);
+  if (filters.maxPrice) query.set("maxPrice", filters.maxPrice);
+  if (filters.sizes) query.set("sizes", filters.sizes);
+  if (filters.colors) query.set("colors", filters.colors);
+  if (filters.stock) query.set("stock", filters.stock);
+
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/products/getProductsByCategory/?category=${category}&page=${page}&limit=${limit}`,
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/products/getProductsByFilters/?${query.toString()}`,
     {
       method: "GET",
       headers: {
@@ -85,5 +103,10 @@ export const getProductsByCategory = async (category, page, limit) => {
       },
     },
   );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch filters");
+  }
+
   return res.json();
 };

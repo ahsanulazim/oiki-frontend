@@ -1,3 +1,7 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   FaFacebook,
   FaFacebookMessenger,
@@ -5,8 +9,21 @@ import {
   FaXTwitter,
 } from "react-icons/fa6";
 import { LuCoins, LuShirt, LuTruck } from "react-icons/lu";
+import { FacebookShareButton } from "react-share";
 
 const TrustBadges = () => {
+  const pathname = usePathname(); // current route
+  const [url, setUrl] = useState("");
+
+  useEffect(() => {
+    // ✅ Production-safe: window only available client-side
+    if (typeof window !== "undefined") {
+      setUrl(`${window.location.origin}${pathname}`);
+    }
+  }, [pathname]);
+
+  if (!url) return <p>loading...</p>;
+
   return (
     <div className="flex max-md:flex-col items-center xl:gap-4">
       <div className="flex xs:items-center flex-col xs:flex-row gap-5 justify-between max-lg:mb-5">
@@ -54,9 +71,11 @@ const TrustBadges = () => {
       <div>
         <h3 className="font-bold max-md:text-center">Share:</h3>
         <div className="flex items-center gap-3 mt-2">
-          <button className="btn btn-square rounded-box lg:btn-sm">
-            <FaFacebook className="xl:size-4" />
-          </button>
+          <FacebookShareButton url={url}>
+            <div className="btn btn-square rounded-box lg:btn-sm">
+              <FaFacebook className="xl:size-4" />
+            </div>
+          </FacebookShareButton>
           <button className="btn btn-square rounded-box lg:btn-sm">
             <FaFacebookMessenger className="xl:size-4" />
           </button>

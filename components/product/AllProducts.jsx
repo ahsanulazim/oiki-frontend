@@ -1,4 +1,4 @@
-import { getProductsByCategory } from "@/api/productApi";
+import { getProductsByFilters } from "@/api/productApi";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProductCard from "../ui/ProductCard";
@@ -9,21 +9,37 @@ const AllProducts = ({ category }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const page = Number(searchParams.get("page") || 1);
+
+  // ✅ Filters from query string
+  const minPrice = searchParams.get("minPrice");
+  const maxPrice = searchParams.get("maxPrice");
+  const sizes = searchParams.get("sizes"); // comma separated
+  const colors = searchParams.get("colors"); // comma separated
+  const stock = searchParams.get("stock"); // "in" / "out"
+
+  const filters = {
+    minPrice,
+    maxPrice,
+    sizes,
+    colors,
+    stock,
+  };
+
   const {
     data: products,
     isLoading: productsLoading,
     isError,
   } = useQuery({
-    queryKey: ["products", page, category],
-    queryFn: () => getProductsByCategory(category, page, 10),
+    queryKey: ["products", page, category, filters],
+    queryFn: () => getProductsByFilters(category, page, 10, filters),
     keepPreviousData: true,
   });
+
+  console.log(products);
 
   const goToPage = (pageNum) => {
     router.push(`/products/${category}/?page=${pageNum}`);
   };
-
-  console.log(products);
 
   return (
     <div className="grid grid-cols-5 gap-5 mt-5">
@@ -33,10 +49,10 @@ const AllProducts = ({ category }) => {
         ))
       ) : isError ? (
         <div>Something went wrong</div>
-      ) : products.products.length === 0 ? (
+      ) : products.products?.length === 0 ? (
         <div>No products found</div>
       ) : (
-        products.products.map((product) => (
+        products.products?.map((product) => (
           <ProductCard key={product._id} product={product} />
         ))
       )}

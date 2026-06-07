@@ -4,6 +4,7 @@ import { LuStar, LuTrash2 } from "react-icons/lu";
 import ProductDeleteModal from "./ProductDeleteModal";
 import { useContext, useRef } from "react";
 import { MyContext } from "@/context/MyProvider";
+import Link from "next/link";
 
 const ProductData = () => {
   const productRef = useRef();
@@ -51,8 +52,10 @@ const ProductData = () => {
                   </label>
                 </th>
                 <td>
-                  <div className="flex items-center gap-3">
-                    <ProductDeleteModal ref={productRef} id={product._id} />
+                  <Link
+                    href={`/dashboard/products/${product.slug}`}
+                    className="flex items-center gap-3"
+                  >
                     <div className="avatar">
                       <div className="mask mask-squircle h-12 w-12">
                         <img
@@ -67,7 +70,7 @@ const ProductData = () => {
                     <div>
                       <div className="font-bold">{product.productName}</div>
                     </div>
-                  </div>
+                  </Link>
                 </td>
                 <td>{product.sku || "N/A"}</td>
                 <td>{product.price}</td>
@@ -83,6 +86,7 @@ const ProductData = () => {
                   </span>
                 </td>
                 <td>
+                  <ProductDeleteModal ref={productRef} id={product._id} />
                   <button
                     className="btn btn-soft btn-error btn-circle"
                     onClick={() => productRef.current?.showModal()}

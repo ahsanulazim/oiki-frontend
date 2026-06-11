@@ -30,7 +30,10 @@ const UserDropdown = () => {
             <a>Settings</a>
           </li>
           <li>
-            <button onClick={() => logoutRef.current.showModal()}>
+            <button
+              onClick={() => logoutRef.current.showModal()}
+              className="text-error hover:bg-error hover:text-error-content"
+            >
               Logout
             </button>
           </li>

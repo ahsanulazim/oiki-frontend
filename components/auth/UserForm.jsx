@@ -1,10 +1,13 @@
 "use client";
 
+import { api } from "@/axios/axiosInstance";
 import { auth } from "@/firebase/firebase.config";
 import {
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  signInWithPopup,
   updateProfile,
 } from "firebase/auth";
 import Image from "next/image";
@@ -35,6 +38,21 @@ const UserForm = ({ isLogin, isForgetPass }) => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+
+  const handleGoogle = async () => {
+    try {
+      const googleUser = await signInWithPopup(auth, new GoogleAuthProvider());
+      const userEmail = googleUser.user.email;
+      await api.post("/users/createUser", {
+        name: googleUser.user.displayName,
+        email: userEmail,
+      });
+      toast.success("Login Successful");
+      router.push("/dashboard");
+    } catch (error) {
+      toast.error("An unexpected error occurred");
+    }
+  };
 
   const onSubmit = async (data) => {
     const name = data.name;
@@ -266,6 +284,7 @@ const UserForm = ({ isLogin, isForgetPass }) => {
 
           <button
             type="button"
+            onClick={handleGoogle}
             className="btn bg-white text-black border-[#e5e5e5]"
           >
             <svg

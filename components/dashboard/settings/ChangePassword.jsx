@@ -3,6 +3,13 @@ import SettingsCard from "./SettingsCard";
 import { passwordValidator } from "@/validators/passwordValidator";
 import { useState } from "react";
 import { LuEye, LuEyeOff } from "react-icons/lu";
+import {
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+} from "firebase/auth";
+import { auth } from "@/firebase/firebase.config";
+import { toast } from "react-toastify";
 
 const ChangePassword = () => {
   const [isHidden, setIsHidden] = useState({
@@ -18,21 +25,32 @@ const ChangePassword = () => {
     }));
   };
 
-  const { Subscribe, handleSubmit, reset, setFieldValue, handleChange, Field } =
-    useForm({
-      defaultValues: {
-        currentPass: "",
-        newPass: "",
-        confirmPass: "",
-      },
-      validators: {
-        onChange: passwordValidator,
-        onSubmit: passwordValidator,
-      },
-      onSubmit: ({ value }) => {
-        console.log(value);
-      },
-    });
+  const { Subscribe, handleSubmit, reset, Field } = useForm({
+    defaultValues: {
+      currentPass: "",
+      newPass: "",
+      confirmPass: "",
+    },
+    validators: {
+      onChange: passwordValidator,
+      onSubmit: passwordValidator,
+    },
+    onSubmit: async ({ value }) => {
+      const user = auth.currentUser;
+      const credential = EmailAuthProvider.credential(
+        user.email,
+        value.currentPass,
+      );
+      try {
+        await reauthenticateWithCredential(user, credential);
+        await updatePassword(user, value.newPass);
+        toast.success("Password changed successfully");
+        reset();
+      } catch (error) {
+        toast.error("Current Password is incorrect");
+      }
+    },
+  });
 
   return (
     <SettingsCard title="Change Password">
@@ -55,7 +73,7 @@ const ChangePassword = () => {
                 <label htmlFor={field.name} className="input w-full">
                   <input
                     type={isHidden.currentPass ? "password" : "text"}
-                    defaultValue={field.state.value}
+                    value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder="******"
@@ -90,7 +108,7 @@ const ChangePassword = () => {
                 <label htmlFor={field.name} className="input w-full">
                   <input
                     type={isHidden.newPass ? "password" : "text"}
-                    defaultValue={field.state.value}
+                    value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder="******"
@@ -123,7 +141,7 @@ const ChangePassword = () => {
                 <label htmlFor={field.name} className="input w-full">
                   <input
                     type={isHidden.confirmPass ? "password" : "text"}
-                    defaultValue={field.state.value}
+                    value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder="******"

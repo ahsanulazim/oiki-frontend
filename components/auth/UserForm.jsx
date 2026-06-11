@@ -62,7 +62,6 @@ const UserForm = ({ isLogin, isForgetPass }) => {
           },
         );
         const userData = await userRes.json();
-        console.log(userData);
 
         setIsLoading(false);
         toast.success("Login Successful");

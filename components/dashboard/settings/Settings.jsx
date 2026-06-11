@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import ChangePassword from "./ChangePassword";
 import NotificationPreferences from "./NotificationPreferences";
 import ShippingAddress from "./ShippingAddress";
+import DangerZone from "./DangerZone";
 
 const Settings = () => {
   const { newUser, loading } = useContext(MyContext);
@@ -29,7 +30,7 @@ const Settings = () => {
         </div>
         <div className="xl:col-span-3 lg:col-span-4 col-span-12 grid gap-5 items-start">
           <NotificationPreferences />
-          <SettingsCard title="Danger Zone"></SettingsCard>
+          <DangerZone />
         </div>
       </div>
     </>

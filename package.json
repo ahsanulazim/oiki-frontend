@@ -12,6 +12,7 @@
     "@dnd-kit/react": "^0.4.0",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@tanstack/react-form-nextjs": "^1.33.0",
     "@tanstack/react-query": "^5.100.9",
     "firebase": "^12.13.0",
     "html-react-parser": "^6.1.1",
@@ -28,7 +29,8 @@
     "react-slick": "^0.31.0",
     "react-spinners": "^0.17.0",
     "react-toastify": "^11.1.0",
-    "slick-carousel": "^1.8.1"
+    "slick-carousel": "^1.8.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

@@ -2,6 +2,8 @@
 
 import { useRef } from "react";
 import LogoutModal from "./LogoutModal";
+import { LuLogOut, LuSettings } from "react-icons/lu";
+import Link from "next/link";
 
 const UserDropdown = () => {
   const logoutRef = useRef();
@@ -27,14 +29,16 @@ const UserDropdown = () => {
           className="menu dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
         >
           <li>
-            <a>Settings</a>
+            <Link href="/dashboard/settings">
+              <LuSettings /> Settings
+            </Link>
           </li>
           <li>
             <button
               onClick={() => logoutRef.current.showModal()}
               className="text-error hover:bg-error hover:text-error-content"
             >
-              Logout
+              <LuLogOut /> Logout
             </button>
           </li>
         </ul>

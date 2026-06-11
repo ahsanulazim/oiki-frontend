@@ -10,6 +10,7 @@ import {
   LuFileBox,
   LuLayoutDashboard,
   LuNotebook,
+  LuSettings,
   LuSwatchBook,
   LuTruck,
 } from "react-icons/lu";
@@ -70,52 +71,66 @@ const Layout = ({ children }) => {
                 <span className="is-drawer-close:hidden">Orders</span>
               </ActiveLink>
             </li>
+            {newUser?.user?.role === "admin" && (
+              <>
+                <li>
+                  <ActiveLink
+                    href="/dashboard/products"
+                    className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                    dataTip="Products"
+                  >
+                    {/* Home icon */}
+                    <LuBox className="my-1.5 inline-block size-4" />
+                    <span className="is-drawer-close:hidden">Products</span>
+                  </ActiveLink>
+                </li>
 
+                {/* List item */}
+                <li>
+                  <ActiveLink
+                    href="/dashboard/categories"
+                    className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                    dataTip="Categories"
+                  >
+                    {/* Settings icon */}
+                    <LuNotebook className="my-1.5 inline-block size-4" />
+                    <span className="is-drawer-close:hidden">Categories</span>
+                  </ActiveLink>
+                </li>
+                <li>
+                  <ActiveLink
+                    href="/dashboard/attributes"
+                    className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                    dataTip="Attributes"
+                  >
+                    {/* Settings icon */}
+                    <LuSwatchBook className="my-1.5 inline-block size-4" />
+                    <span className="is-drawer-close:hidden">Attributes</span>
+                  </ActiveLink>
+                </li>
+
+                <li>
+                  <ActiveLink
+                    href="/dashboard/shipping"
+                    className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                    dataTip="Shipping"
+                  >
+                    {/* Home icon */}
+                    <LuTruck className="my-1.5 inline-block size-4" />
+                    <span className="is-drawer-close:hidden">Shipping</span>
+                  </ActiveLink>
+                </li>
+              </>
+            )}
             <li>
               <ActiveLink
-                href="/dashboard/products"
+                href="/dashboard/settings"
                 className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                dataTip="Products"
+                dataTip="Settings"
               >
                 {/* Home icon */}
-                <LuBox className="my-1.5 inline-block size-4" />
-                <span className="is-drawer-close:hidden">Products</span>
-              </ActiveLink>
-            </li>
-
-            {/* List item */}
-            <li>
-              <ActiveLink
-                href="/dashboard/categories"
-                className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                dataTip="Categories"
-              >
-                {/* Settings icon */}
-                <LuNotebook className="my-1.5 inline-block size-4" />
-                <span className="is-drawer-close:hidden">Categories</span>
-              </ActiveLink>
-            </li>
-            <li>
-              <ActiveLink
-                href="/dashboard/attributes"
-                className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                dataTip="Attributes"
-              >
-                {/* Settings icon */}
-                <LuSwatchBook className="my-1.5 inline-block size-4" />
-                <span className="is-drawer-close:hidden">Attributes</span>
-              </ActiveLink>
-            </li>
-
-            <li>
-              <ActiveLink
-                href="/dashboard/shipping"
-                className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                dataTip="Shipping"
-              >
-                {/* Home icon */}
-                <LuTruck className="my-1.5 inline-block size-4" />
-                <span className="is-drawer-close:hidden">Shipping</span>
+                <LuSettings className="my-1.5 inline-block size-4" />
+                <span className="is-drawer-close:hidden">Settings</span>
               </ActiveLink>
             </li>
           </ul>

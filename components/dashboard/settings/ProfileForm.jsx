@@ -4,6 +4,7 @@ import SettingsCard from "./SettingsCard";
 import { useForm } from "@tanstack/react-form-nextjs";
 import { MyContext } from "@/context/MyProvider";
 import { useContext, useState } from "react";
+import { profileValidator } from "@/validators/passwordValidator";
 
 const ProfileForm = () => {
   const { newUser } = useContext(MyContext);
@@ -13,13 +14,16 @@ const ProfileForm = () => {
     email: false,
   });
 
-  const { Field, Subscribe, handleSubmit } = useForm({
+  const { Field, handleSubmit } = useForm({
     defaultValues: {
       name: newUser?.user?.name,
       email: newUser?.user?.email,
     },
-    onSubmit: async (values) => {
-      console.log(values);
+    onSubmit: async ({ value }) => {
+      console.log(value);
+    },
+    validators: {
+      onSubmit: profileValidator,
     },
   });
 
@@ -61,32 +65,42 @@ const ProfileForm = () => {
               const { errors } = field.state.meta;
               return (
                 isEdit.name && (
-                  <div className="flex gap-2">
-                    <label htmlFor={field.name} className="input w-full">
-                      <input
-                        type="text"
-                        className="grow"
-                        defaultValue={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        placeholder="Md Abdur Rahman"
-                      />
-                    </label>
-                    <button
-                      disabled={field.state.meta.isDefaultValue}
-                      className="btn btn-square btn-success self-end"
-                    >
-                      <LuSave />
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-error btn-square btn-outline"
-                      onClick={() =>
-                        setIsEdit({ ...isEdit, name: !isEdit.name })
-                      }
-                    >
-                      <LuX />
-                    </button>
-                  </div>
+                  <>
+                    <div className="flex gap-2">
+                      <label htmlFor={field.name} className="input w-full">
+                        <input
+                          type="text"
+                          className="grow"
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          placeholder="Md Abdur Rahman"
+                        />
+                      </label>
+                      <button
+                        disabled={field.state.meta.isDefaultValue || field.state.meta.isSubmitting}
+                        type="submit"
+                        className="btn btn-square btn-success self-end"
+                      >
+                        {field.state.meta.isSubmitting ? (
+                          <span className="loading loading-spinner"></span>
+                        ) : (
+                          <LuSave />
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-error btn-square btn-outline"
+                        onClick={() =>
+                          setIsEdit({ ...isEdit, name: !isEdit.name })
+                        }
+                      >
+                        <LuX />
+                      </button>
+                    </div>
+                    {errors.length > 0 && (
+                      <p className="text-red-600">{errors[0]?.message}</p>
+                    )}
+                  </>
                 )
               );
             }}
@@ -99,6 +113,7 @@ const ProfileForm = () => {
             <div className="flex gap-2">
               <p className="text-base font-semibold">{newUser?.user?.email}</p>
               <button
+                type="button"
                 className="btn btn-square btn-xs btn-info"
                 onClick={() => setIsEdit({ ...isEdit, email: !isEdit.email })}
               >
@@ -111,31 +126,41 @@ const ProfileForm = () => {
               const { errors } = field.state.meta;
               return (
                 isEdit.email && (
-                  <div className="flex gap-2">
-                    <label htmlFor={field.name} className="input w-full">
-                      <input
-                        type="email"
-                        className="grow"
-                        defaultValue={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                      />
-                    </label>
-                    <button
-                      disabled={field.state.meta.isDefaultValue}
-                      className="btn btn-square btn-success self-end"
-                    >
-                      <LuSave />
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-error btn-square btn-outline"
-                      onClick={() =>
-                        setIsEdit({ ...isEdit, email: !isEdit.email })
-                      }
-                    >
-                      <LuX />
-                    </button>
-                  </div>
+                  <>
+                    <div className="flex gap-2">
+                      <label htmlFor={field.name} className="input w-full">
+                        <input
+                          type="text"
+                          className="grow"
+                          value={field.state.value}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                        />
+                      </label>
+                      <button
+                        disabled={field.state.meta.isDefaultValue || field.state.meta.isSubmitting}
+                        type="submit"
+                        className="btn btn-square btn-success self-end"
+                      >
+                        {field.state.meta.isSubmitting ? (
+                          <span className="loading loading-spinner"></span>
+                        ) : (
+                          <LuSave />
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-error btn-square btn-outline"
+                        onClick={() =>
+                          setIsEdit({ ...isEdit, email: !isEdit.email })
+                        }
+                      >
+                        <LuX />
+                      </button>
+                    </div>
+                    {errors.length > 0 && (
+                      <p className="text-red-600">{errors[0]?.message}</p>
+                    )}
+                  </>
                 )
               );
             }}

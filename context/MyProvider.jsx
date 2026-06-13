@@ -3,6 +3,7 @@ import { getAllCategories } from "@/api/categoryApi";
 import { getAllLocations } from "@/api/locationApi";
 import { getAllProducts } from "@/api/productApi";
 import { getAllShippingRates } from "@/api/shippingApi";
+import { api } from "@/axios/axiosInstance";
 import { auth } from "@/firebase/firebase.config";
 import { useQuery } from "@tanstack/react-query";
 import { onAuthStateChanged } from "firebase/auth";
@@ -26,16 +27,13 @@ const MyProvider = ({ children }) => {
       if (user) {
         const email = user.email;
         try {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_SERVER_URL}/users/getUser?email=${email}`,
-            {
-              method: "GET",
-              headers: { "Content-Type": "application/json" },
+          const res = await api.get("/users/getUser", {
+            params: {
+              email,
             },
-          );
-          const data = await res.json();
-          setNewUser(data);
-          localStorage.setItem("user", JSON.stringify(data));
+          });
+          setNewUser(res.data);
+          localStorage.setItem("user", JSON.stringify(res.data));
         } catch (error) {
           console.error("Error fetching user data:", error);
         }

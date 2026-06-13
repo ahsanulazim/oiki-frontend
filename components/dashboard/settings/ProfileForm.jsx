@@ -5,6 +5,8 @@ import { useForm } from "@tanstack/react-form-nextjs";
 import { MyContext } from "@/context/MyProvider";
 import { useContext, useState } from "react";
 import { profileValidator } from "@/validators/passwordValidator";
+import { api } from "@/axios/axiosInstance";
+import { toast } from "react-toastify";
 
 const ProfileForm = () => {
   const { newUser } = useContext(MyContext);
@@ -20,7 +22,12 @@ const ProfileForm = () => {
       email: newUser?.user?.email,
     },
     onSubmit: async ({ value }) => {
-      console.log(value);
+      await api.put("/users/updateUser", value, {
+        params: {
+          email: newUser?.user?.email,
+        },
+      });
+      toast.success("Profile updated successfully");
     },
     validators: {
       onSubmit: profileValidator,
@@ -77,7 +84,10 @@ const ProfileForm = () => {
                         />
                       </label>
                       <button
-                        disabled={field.state.meta.isDefaultValue || field.state.meta.isSubmitting}
+                        disabled={
+                          field.state.meta.isDefaultValue ||
+                          field.state.meta.isSubmitting
+                        }
                         type="submit"
                         className="btn btn-square btn-success self-end"
                       >
@@ -137,7 +147,10 @@ const ProfileForm = () => {
                         />
                       </label>
                       <button
-                        disabled={field.state.meta.isDefaultValue || field.state.meta.isSubmitting}
+                        disabled={
+                          field.state.meta.isDefaultValue ||
+                          field.state.meta.isSubmitting
+                        }
                         type="submit"
                         className="btn btn-square btn-success self-end"
                       >

@@ -17,7 +17,7 @@ const NewArrival = () => {
         <h2 className="text-xl sm:text-3xl font-bold text-main">
           New Arrivals
         </h2>
-        <div className="mt-5 grid grid-cols-2 xs:grid-cols-3 lg:grid-cols-6 gap-5">
+        <div className="mt-5 grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 md:gap-5">
           {isLoading
             ? Array.from({ length: 6 }).map((_, i) => (
                 <ProductCardSkeleton key={i} />

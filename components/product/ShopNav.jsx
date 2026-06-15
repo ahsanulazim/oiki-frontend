@@ -2,7 +2,7 @@ import Link from "next/link";
 import { LuHouse } from "react-icons/lu";
 
 const ShopNav = ({ category, product }) => {
-  const cleanCategory = category.replace(/-/g, " ");
+  const cleanCategory = category?.replace(/-/g, " ") || "";
   return (
     <section className="px-5">
       <div className="max-w-360 mx-auto">

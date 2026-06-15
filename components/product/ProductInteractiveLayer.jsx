@@ -6,13 +6,16 @@ import { FaStar } from "react-icons/fa6";
 import TrustBadges from "./TrustBadges";
 import { MyContext } from "@/context/MyProvider";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const ProductInteractiveLayer = ({ product }) => {
+  const router = useRouter();
+
   // 1. Initial State Definition
   // Stock ache emon prothom color select hobe; kono color e stock na thakle first color
   const initialVariant = useMemo(() => {
     const withStock = product?.variantDetails?.find((v) =>
-      v.sizes?.some((s) => s.stock > 0)
+      v.sizes?.some((s) => s.stock > 0),
     );
     return withStock || product?.variantDetails?.[0];
   }, [product]);
@@ -233,9 +236,19 @@ const ProductInteractiveLayer = ({ product }) => {
             <button
               disabled={currentStock === 0}
               className={`btn ${currentStock === 0 ? "" : "btn-main"} flex-1`}
-              onClick={() =>
-                addToCart(product, activeVariant, selectedSize, quantity, true)
-              }
+              onClick={() => {
+                const result = addToCart(
+                  product,
+                  activeVariant,
+                  selectedSize,
+                  quantity,
+                  true,
+                );
+                if (result) {
+                  toast.success("Added to cart");
+                  router.push("/cart/checkout");
+                }
+              }}
             >
               Buy Now
             </button>

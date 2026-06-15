@@ -32,7 +32,7 @@ const ProductCard = ({ product }) => {
       </Link>
       <div className="card-body p-3">
         <Link href={`/products/${product.category}/${product.slug}`}>
-          <h2 className="card-title text-xs xs:text-sm font-normal">
+          <h2 className="card-title text-xs xs:text-sm font-normal line-clamp-2">
             {product.productName}
           </h2>
         </Link>

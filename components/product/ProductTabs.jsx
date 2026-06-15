@@ -1,6 +1,10 @@
 import parse from "html-react-parser";
 
 const ProductTabs = ({ product }) => {
+  const description = product?.productDescription
+    ? product.productDescription.replace(/\u00A0/g, " ")
+    : "No description available.";
+
   return (
     <section className="my-10 px-5">
       <div className="max-w-360 mx-auto w-full">
@@ -13,7 +17,7 @@ const ProductTabs = ({ product }) => {
             defaultChecked
           />
           <div className="tab-content bg-base-100 border-base-300 p-6 wrap-break-word whitespace-normal">
-            {parse(product?.productDescription.replace(/\u00A0/g, " "))}
+            {parse(description)}
           </div>
 
           <input

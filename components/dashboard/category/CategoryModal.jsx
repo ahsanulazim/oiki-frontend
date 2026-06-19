@@ -55,7 +55,7 @@ const CategoryModal = ({ ref }) => {
     <dialog ref={ref} className="modal">
       <div className="modal-box">
         <h3 className="font-bold text-lg">Add New Category</h3>
-        <form onSubmit={handleSubmit(onSubmit)} className="fieldset ">
+        <form onSubmit={handleSubmit(onSubmit)} className="fieldset">
           <label className="label">Category Name</label>
           <input
             {...register("name", {

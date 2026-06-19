@@ -3,10 +3,14 @@
 import { useRef } from "react";
 import LogoutModal from "./LogoutModal";
 import { LuLogOut, LuSettings } from "react-icons/lu";
+import { MyContext } from "@/context/MyProvider";
 import Link from "next/link";
+import { useContext } from "react";
 
 const UserDropdown = () => {
   const logoutRef = useRef();
+
+  const { newUser, loading } = useContext(MyContext);
 
   return (
     <>
@@ -15,13 +19,16 @@ const UserDropdown = () => {
         <div
           tabIndex={0}
           role="button"
-          className="btn btn-ghost btn-circle avatar"
+          className="btn btn-ghost btn-circle avatar avatar-placeholder"
         >
-          <div className="w-10 rounded-full">
-            <img
-              alt="Tailwind CSS Navbar component"
-              src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-            />
+          <div className="w-10 rounded-full bg-primary-content text-primary">
+            {loading ? (
+              <span className="loading loading-spinner"></span>
+            ) : (
+              <span className="text-lg">
+                {newUser?.user?.name?.charAt(0).toUpperCase()}
+              </span>
+            )}
           </div>
         </div>
         <ul

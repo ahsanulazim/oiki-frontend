@@ -13,6 +13,7 @@ import {
   LuSettings,
   LuSwatchBook,
   LuTruck,
+  LuUser,
 } from "react-icons/lu";
 
 const Layout = ({ children }) => {
@@ -118,6 +119,17 @@ const Layout = ({ children }) => {
                     {/* Home icon */}
                     <LuTruck className="my-1.5 inline-block size-4" />
                     <span className="is-drawer-close:hidden">Shipping</span>
+                  </ActiveLink>
+                </li>
+                <li>
+                  <ActiveLink
+                    href="/dashboard/users"
+                    className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                    dataTip="Users"
+                  >
+                    {/* Home icon */}
+                    <LuUser className="my-1.5 inline-block size-4" />
+                    <span className="is-drawer-close:hidden">Users</span>
                   </ActiveLink>
                 </li>
               </>

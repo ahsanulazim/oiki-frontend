@@ -13,8 +13,9 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
+import { MyContext } from "@/context/MyProvider";
 import {
   LuArrowLeft,
   LuArrowRight,
@@ -29,6 +30,7 @@ import { toast } from "react-toastify";
 const UserForm = ({ isLogin, isForgetPass }) => {
   const [isHidden, setIsHidden] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { setNewUser } = useContext(MyContext);
 
   const router = useRouter();
 
@@ -42,11 +44,16 @@ const UserForm = ({ isLogin, isForgetPass }) => {
   const handleGoogle = async () => {
     try {
       const googleUser = await signInWithPopup(auth, new GoogleAuthProvider());
+
       const userEmail = googleUser.user.email;
-      await api.post("/users/createUser", {
+
+      const res = await api.post("/users/createUser", {
         name: googleUser.user.displayName,
         email: userEmail,
+        isGoogle: true,
       });
+      setNewUser(res.data);
+      localStorage.setItem("user", JSON.stringify(res.data));
       toast.success("Login Successful");
       router.push("/dashboard");
     } catch (error) {
@@ -80,6 +87,8 @@ const UserForm = ({ isLogin, isForgetPass }) => {
           },
         );
         const userData = await userRes.json();
+        setNewUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
 
         setIsLoading(false);
         toast.success("Login Successful");
@@ -133,17 +142,24 @@ const UserForm = ({ isLogin, isForgetPass }) => {
             body: JSON.stringify({
               name: name,
               email: email,
+              isGoogle: false,
             }),
           },
         );
         const userData = await userRes.json();
+        setNewUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
         setIsLoading(false);
         toast.success("Registration Successful");
         router.push("/dashboard");
         reset();
       } catch (error) {
         setIsLoading(false);
-        toast.error("Registration Failed");
+        if (error.code === "auth/email-already-in-use") {
+          toast.error("Email already in use");
+        } else {
+          toast.error("Registration Failed");
+        }
         console.error("Registration Error:", error);
       }
     }

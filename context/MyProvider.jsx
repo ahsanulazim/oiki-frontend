@@ -24,6 +24,8 @@ const MyProvider = ({ children }) => {
 
     // Firebase observer একবারই attach হবে
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setLoading(true);
+
       if (user) {
         const email = user.email;
         try {
@@ -34,14 +36,23 @@ const MyProvider = ({ children }) => {
           });
           setNewUser(res.data);
           localStorage.setItem("user", JSON.stringify(res.data));
+          setLoading(false);
         } catch (error) {
-          console.error("Error fetching user data:", error);
+          if (error.response && error.response.status === 404) {
+            // It's a new registration, the user is not in the database yet.
+            // UserForm will handle setting the user after calling createUser API.
+            console.log("New user registered, waiting for DB sync...");
+            setLoading(false);
+          } else {
+            console.error("Error fetching user data:", error);
+            setLoading(false);
+          }
         }
       } else {
         setNewUser(null);
         localStorage.removeItem("user");
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => unsubscribe();

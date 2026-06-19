@@ -3,8 +3,8 @@ import SettingsCard from "../settings/SettingsCard";
 const OrderTracking = () => {
   return (
     <SettingsCard title="Order Tracking">
-      <ul className="timeline timeline-vertical">
-        <li>
+      <ul className="timeline timeline-vertical items-start">
+        <li className="grid-cols-none!">
           <div className="timeline-middle">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -24,7 +24,7 @@ const OrderTracking = () => {
           </div>
           <hr />
         </li>
-        <li>
+        <li className="grid-cols-none!">
           <hr />
           <div className="timeline-middle">
             <svg
@@ -43,7 +43,7 @@ const OrderTracking = () => {
           <div className="timeline-end timeline-box">iMac</div>
           <hr />
         </li>
-        <li>
+        <li className="grid-cols-none!">
           <hr />
           <div className="timeline-middle">
             <svg
@@ -62,7 +62,7 @@ const OrderTracking = () => {
           <div className="timeline-end timeline-box">iPod</div>
           <hr />
         </li>
-        <li>
+        <li className="grid-cols-none!">
           <hr />
           <div className="timeline-middle">
             <svg
@@ -81,7 +81,7 @@ const OrderTracking = () => {
           <div className="timeline-end timeline-box">iPhone</div>
           <hr />
         </li>
-        <li>
+        <li className="grid-cols-none!">
           <hr />
           <div className="timeline-middle">
             <svg

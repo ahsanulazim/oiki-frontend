@@ -3,11 +3,13 @@ import { getAllAttribute } from "@/api/attributeApi";
 import { useQuery } from "@tanstack/react-query";
 import { LuEye, LuTrash2 } from "react-icons/lu";
 import AttributeDeleteModal from "./AttributeDeleteModal";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 
 const AttributeTable = () => {
-  const { data, isLoading } = useQuery({
+  const [attributeId, setAttributeId] = useState();
+
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["attributes"],
     queryFn: getAllAttribute,
   });
@@ -34,6 +36,12 @@ const AttributeTable = () => {
                 Loading...
               </td>
             </tr>
+          ) : isError ? (
+            <tr>
+              <td colSpan="4" className="text-center">
+                Something went wrong
+              </td>
+            </tr>
           ) : data.length <= 0 ? (
             <tr>
               <td colSpan="4" className="text-center">
@@ -52,10 +60,6 @@ const AttributeTable = () => {
                 </td>
                 <td>
                   <div className="flex gap-3">
-                    <AttributeDeleteModal
-                      ref={attributeDeleteRef}
-                      id={attribute._id}
-                    />
                     <Link
                       href={`/dashboard/attributes/${attribute.slug}`}
                       className="btn btn-success btn-circle btn-soft"
@@ -64,7 +68,10 @@ const AttributeTable = () => {
                     </Link>
                     <button
                       className="btn btn-error btn-circle btn-soft"
-                      onClick={() => attributeDeleteRef.current.showModal()}
+                      onClick={() => {
+                        attributeDeleteRef.current.showModal();
+                        setAttributeId(attribute._id);
+                      }}
                     >
                       <LuTrash2 />
                     </button>
@@ -75,6 +82,7 @@ const AttributeTable = () => {
           )}
         </tbody>
       </table>
+      <AttributeDeleteModal ref={attributeDeleteRef} id={attributeId} />
     </div>
   );
 };

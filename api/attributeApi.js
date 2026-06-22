@@ -1,19 +1,15 @@
+import { api } from "@/axios/axiosInstance";
+
 export const createAttribute = async (attributeData) => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/attributes/createAttribute`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(attributeData),
-    },
-  );
+  const res = await api.post("/attributes/createAttribute", attributeData);
+  return res.data;
+};
 
-  const data = await res.json();
-
-  if (!res.ok) {
-    throw new Error("Failed to Create Attribute");
-  }
-  return data;
+export const updateAttribute = async ({ attributeData, id }) => {
+  const res = await api.patch("/attributes/updateAttribute", attributeData, {
+    params: { id },
+  });
+  return res.data;
 };
 
 export const getAllAttribute = async () => {

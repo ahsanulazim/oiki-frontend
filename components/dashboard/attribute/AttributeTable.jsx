@@ -33,7 +33,7 @@ const AttributeTable = () => {
           {isLoading ? (
             <tr>
               <td colSpan="4" className="text-center">
-                Loading...
+                <span className="loading loading-spinner"></span>
               </td>
             </tr>
           ) : isError ? (

@@ -19,6 +19,7 @@ const TABS = [
 const OrderData = () => {
   const orderRef = useRef(null);
   const [activeTab, setActiveTab] = useState("all");
+  const [orderId, setOrderId] = useState(null);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["orders"],
@@ -185,7 +186,6 @@ const OrderData = () => {
                     </td>
                     <td>
                       <div className="flex">
-                        <OrderDeleteModal id={order._id} ref={orderRef} />
                         <Link
                           href={`/dashboard/orders/${order._id}`}
                           className="btn btn-circle btn-ghost btn-info"
@@ -202,7 +202,10 @@ const OrderData = () => {
                         </div>
                         <button
                           className="btn btn-circle btn-ghost btn-error"
-                          onClick={() => orderRef.current.showModal()}
+                          onClick={() => {
+                            orderRef.current.showModal();
+                            setOrderId(order._id);
+                          }}
                         >
                           <LuTrash2 />
                         </button>
@@ -213,6 +216,7 @@ const OrderData = () => {
               )}
             </tbody>
           </table>
+          <OrderDeleteModal id={orderId} ref={orderRef} />
         </div>
       </div>
     </div>

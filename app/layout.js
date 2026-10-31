@@ -3,6 +3,7 @@ import "./globals.css";
 import "react-quill-new/dist/quill.snow.css";
 import QueryProvider from "@/query/QueryProvider";
 import MyProvider from "@/context/MyProvider";
+import SocketProvider from "@/context/SocketProvider";
 import { ToastContainer } from "react-toastify";
 
 const dm_sans = DM_Sans({
@@ -32,10 +33,12 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full font-dm-sans">
         <QueryProvider>
-          <MyProvider>
-            <ToastContainer />
-            {children}
-          </MyProvider>
+          <SocketProvider>
+            <MyProvider>
+              <ToastContainer />
+              {children}
+            </MyProvider>
+          </SocketProvider>
         </QueryProvider>
       </body>
     </html>

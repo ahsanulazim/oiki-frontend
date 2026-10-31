@@ -9,7 +9,7 @@ const AttributeDeleteModal = ({ ref, id }) => {
     mutationFn: deleteAttribute,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["attributes"] });
-      toast.success("Attribute Deleted");
+      toast.warn("Attribute Deleted");
     },
     onError: () => {
       toast.error("Attribute Cannot be Deleted");

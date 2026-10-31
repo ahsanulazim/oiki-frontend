@@ -1,5 +1,7 @@
 import Filter from "@/components/product/Filter";
 import ShopNav from "@/components/product/ShopNav";
+import Spinner from "@/components/skeleton/Spinner";
+import { Suspense } from "react";
 
 const page = async ({ params }) => {
   const { category } = await params;
@@ -7,7 +9,9 @@ const page = async ({ params }) => {
   return (
     <>
       <ShopNav category={category} />
-      <Filter category={category} />
+      <Suspense fallback={<Spinner />}>
+        <Filter category={category} />
+      </Suspense>
     </>
   );
 };

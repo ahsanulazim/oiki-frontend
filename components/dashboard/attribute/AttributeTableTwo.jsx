@@ -1,16 +1,11 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
-import { LuPlus, LuSlidersHorizontal, LuTrash2 } from "react-icons/lu";
+import { useQuery } from "@tanstack/react-query";
+import { LuSlidersHorizontal } from "react-icons/lu";
 import { getAllAttribute } from "@/api/attributeApi";
-import { useRef } from "react";
 import AttributeCard from "./AttributeCard";
 
 export default function AttributeTableTwo() {
-  const queryClient = useQueryClient();
-  const AddAttributeModalRef = useRef(null);
-
   const {
     data: attributes = [],
     isLoading: isLoadingAttributes,
@@ -18,14 +13,6 @@ export default function AttributeTableTwo() {
   } = useQuery({
     queryKey: ["attributes"],
     queryFn: getAllAttribute,
-  });
-
-  const deleteAttributeMutation = useMutation({
-    mutationFn: () => console.log("delete"),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["attributes"] });
-      toast.warn("Catalog attribute definition has been removed.");
-    },
   });
 
   return (

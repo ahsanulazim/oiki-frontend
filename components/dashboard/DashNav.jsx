@@ -1,11 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import UserDropdown from "./UserDropdown";
 import Image from "next/image";
+import { useSocket } from "@/context/SocketProvider";
 
 const DashNav = () => {
+  const { isConnected } = useSocket();
+
   return (
     <header className="navbar bg-base-100 shadow-sm">
-      <div className="flex-1 flex items-center">
+      <div className="flex-1 flex items-center gap-2">
         <label
           htmlFor="my-drawer-4"
           aria-label="open sidebar"
@@ -37,7 +42,7 @@ const DashNav = () => {
           />
         </Link>
       </div>
-      <div className="flex-none">
+      <div className="flex-none flex items-center gap-3">
         <UserDropdown />
       </div>
     </header>

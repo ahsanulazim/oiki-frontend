@@ -12,6 +12,7 @@ import {
   LuNotebook,
   LuSettings,
   LuSwatchBook,
+  LuTag,
   LuTruck,
   LuUser,
 } from "react-icons/lu";
@@ -55,7 +56,6 @@ const Layout = ({ children }) => {
                 className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                 dataTip="Dashboard"
               >
-                {/* Home icon */}
                 <LuLayoutDashboard className="my-1.5 inline-block size-4" />
                 <span className="is-drawer-close:hidden">Dashboard</span>
               </ActiveLink>
@@ -67,7 +67,6 @@ const Layout = ({ children }) => {
                 className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                 dataTip="Orders"
               >
-                {/* Home icon */}
                 <LuFileBox className="my-1.5 inline-block size-4" />
                 <span className="is-drawer-close:hidden">Orders</span>
               </ActiveLink>
@@ -80,20 +79,17 @@ const Layout = ({ children }) => {
                     className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                     dataTip="Products"
                   >
-                    {/* Home icon */}
                     <LuBox className="my-1.5 inline-block size-4" />
                     <span className="is-drawer-close:hidden">Products</span>
                   </ActiveLink>
                 </li>
 
-                {/* List item */}
                 <li>
                   <ActiveLink
                     href="/dashboard/categories"
                     className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                     dataTip="Categories"
                   >
-                    {/* Settings icon */}
                     <LuNotebook className="my-1.5 inline-block size-4" />
                     <span className="is-drawer-close:hidden">Categories</span>
                   </ActiveLink>
@@ -104,9 +100,21 @@ const Layout = ({ children }) => {
                     className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                     dataTip="Attributes"
                   >
-                    {/* Settings icon */}
                     <LuSwatchBook className="my-1.5 inline-block size-4" />
                     <span className="is-drawer-close:hidden">Attributes</span>
+                  </ActiveLink>
+                </li>
+
+                <li>
+                  <ActiveLink
+                    href="/dashboard/coupons"
+                    className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                    dataTip="Coupons & Discounts"
+                  >
+                    <LuTag className="my-1.5 inline-block size-4" />
+                    <span className="is-drawer-close:hidden">
+                      Coupons & Discounts
+                    </span>
                   </ActiveLink>
                 </li>
 
@@ -116,7 +124,6 @@ const Layout = ({ children }) => {
                     className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                     dataTip="Shipping"
                   >
-                    {/* Home icon */}
                     <LuTruck className="my-1.5 inline-block size-4" />
                     <span className="is-drawer-close:hidden">Shipping</span>
                   </ActiveLink>
@@ -127,7 +134,6 @@ const Layout = ({ children }) => {
                     className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                     dataTip="Users"
                   >
-                    {/* Home icon */}
                     <LuUser className="my-1.5 inline-block size-4" />
                     <span className="is-drawer-close:hidden">Users</span>
                   </ActiveLink>
@@ -140,7 +146,6 @@ const Layout = ({ children }) => {
                 className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                 dataTip="Settings"
               >
-                {/* Home icon */}
                 <LuSettings className="my-1.5 inline-block size-4" />
                 <span className="is-drawer-close:hidden">Settings</span>
               </ActiveLink>

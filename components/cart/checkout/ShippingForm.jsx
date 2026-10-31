@@ -1,3 +1,4 @@
+"use client";
 import { Controller, useForm } from "react-hook-form";
 import Select from "react-select";
 import { useContext, useEffect } from "react";
@@ -5,16 +6,31 @@ import { MyContext } from "@/context/MyProvider";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createOrder } from "@/api/orderApi";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
-const ShippingForm = ({ ref, setIsPending, paymentMethod }) => {
-  const { locations, locationsLoading, setDeliveryAdd, cartItems, newUser } =
-    useContext(MyContext);
+const ShippingForm = ({
+  ref,
+  setIsPending,
+  setOrderCompleted,
+  paymentMethod,
+}) => {
+  const router = useRouter();
+  const {
+    locations,
+    locationsLoading,
+    setDeliveryAdd,
+    cartItems,
+    newUser,
+    clearCart,
+    appliedCoupon,
+  } = useContext(MyContext);
 
   const {
     handleSubmit,
     register,
     reset,
     control,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -29,6 +45,27 @@ const ShippingForm = ({ ref, setIsPending, paymentMethod }) => {
     },
   });
 
+  // Pre-fill form if user has saved shipping address or profile details
+  useEffect(() => {
+    const u = newUser?.user;
+    if (!u) return;
+    const savedAddr = u.shippingAddress || {};
+    const nameParts = (u.name || "").trim().split(" ");
+    setValue("firstName", savedAddr.firstName || nameParts[0] || "");
+    setValue(
+      "lastName",
+      savedAddr.lastName || nameParts.slice(1).join(" ") || "",
+    );
+    setValue("email", savedAddr.email || u.email || "");
+    setValue("phone", savedAddr.phone || u.phone || "");
+    if (savedAddr.address) setValue("address", savedAddr.address);
+    if (savedAddr.thana) setValue("thana", savedAddr.thana);
+    if (savedAddr.district) {
+      setValue("district", savedAddr.district);
+      setDeliveryAdd(savedAddr.district);
+    }
+  }, [newUser, setValue, setDeliveryAdd]);
+
   const districtOptions = locationsLoading
     ? [{ value: "", label: "Loading...", isDisabled: true }]
     : locations?.map((location) => ({
@@ -42,11 +79,18 @@ const ShippingForm = ({ ref, setIsPending, paymentMethod }) => {
     mutationFn: createOrder,
     onSuccess: (data) => {
       if (paymentMethod === "cod") {
+        setOrderCompleted?.(true);
         queryClient.invalidateQueries({ queryKey: ["orders"] });
-        toast.success("Order Created Successfully");
+        clearCart();
+        toast.success("Order Placed Successfully");
         reset();
+        const orderId = data?.order?._id || data?.order?.insertedId || "";
+        router.push(
+          `/cart/checkout/payment-success?orderId=${orderId}&method=cod`,
+        );
       } else if (paymentMethod === "online") {
         if (data?.paymentUrl) {
+          setOrderCompleted?.(true);
           window.location.href = data.paymentUrl;
         } else {
           toast.error("Payment URL not found");
@@ -54,7 +98,7 @@ const ShippingForm = ({ ref, setIsPending, paymentMethod }) => {
       }
     },
     onError: (error) => {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to create order");
     },
   });
 
@@ -70,9 +114,9 @@ const ShippingForm = ({ ref, setIsPending, paymentMethod }) => {
       customer: data,
       products: cartItems,
       paymentMethod,
+      couponCode: appliedCoupon?.code || null,
     };
 
-    console.log(orderData);
     mutate(orderData);
   };
 
@@ -144,14 +188,13 @@ const ShippingForm = ({ ref, setIsPending, paymentMethod }) => {
                 {...field}
                 options={districtOptions}
                 placeholder="Select District"
-                // এখানে value কে option object বানাও
                 value={
-                  districtOptions.find((opt) => opt.value === field.value) ||
+                  districtOptions?.find((opt) => opt.value === field.value) ||
                   null
                 }
                 onChange={(selected) => {
-                  field.onChange(selected.value); // form state update হবে
-                  setDeliveryAdd(selected.value); // context এও যাবে
+                  field.onChange(selected.value);
+                  setDeliveryAdd(selected.value);
                 }}
               />
             )}

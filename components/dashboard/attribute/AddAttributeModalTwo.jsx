@@ -58,7 +58,10 @@ const AddAttributeModalTwo = ({ ref, isEditing, attribute }) => {
             Define Custom Product Attributable Variation
           </h4>
           <button
-            onClick={() => ref.current.close()}
+            onClick={() => {
+              ref.current.close();
+              reset();
+            }}
             className="btn btn-error btn-square btn-sm btn-soft"
           >
             <LuX />
@@ -155,7 +158,16 @@ const AddAttributeModalTwo = ({ ref, isEditing, attribute }) => {
                           .filter((v) => v.length > 0),
                       );
                     }}
-                    onChange={(e) => field.handleChange(e.target.value)}
+                    onChange={(e) => {
+                      field.handleChange(e.target.value);
+                      setFieldValue(
+                        field.name,
+                        e.target.value
+                          .split(",")
+                          .map((v) => v.trim())
+                          .filter((v) => v.length > 0),
+                      );
+                    }}
                     value={field.state.value}
                     placeholder="e.g. 128GB, 256GB, 512GB, 1TB"
                     className="input w-full"

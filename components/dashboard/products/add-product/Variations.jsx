@@ -14,7 +14,13 @@ const toOptions = (items) =>
     swatchImage: item.image ?? item.swatchImage ?? null,
   })) ?? [];
 
-const Variations = ({ register, setValue, getValues, errors }) => {
+const Variations = ({
+  register,
+  setValue,
+  getValues,
+  errors,
+  initialVariants,
+}) => {
   const { data: variations, isLoading: variationsLoading } = useQuery({
     queryKey: ["variations"],
     queryFn: getAllVariations,
@@ -39,6 +45,40 @@ const Variations = ({ register, setValue, getValues, errors }) => {
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedSizesByColor, setSelectedSizesByColor] = useState({});
   const [colorMeta, setColorMeta] = useState({});
+  const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+    if (
+      !initialized &&
+      Array.isArray(initialVariants) &&
+      initialVariants.length > 0
+    ) {
+      const initColors = initialVariants.map((v) => ({
+        label: v.color,
+        value: v.hex || "#000000",
+        swatchImage: v.swatchImage || null,
+      }));
+      const initSizes = {};
+      const initMeta = {};
+
+      initialVariants.forEach((v) => {
+        initSizes[v.color] = (v.sizes || []).map((s) => ({
+          label: s.size,
+          value: s.size,
+        }));
+        initMeta[v.color] = {
+          swatchImage: v.swatchImage || null,
+          imageGallery: v.imageGallery || [],
+        };
+      });
+
+      setSelectedColors(initColors);
+      setSelectedSizesByColor(initSizes);
+      setColorMeta(initMeta);
+      setValue("variantDetails", initialVariants);
+      setInitialized(true);
+    }
+  }, [initialVariants, initialized, setValue]);
 
   const normalizeOptions = (options) => options ?? [];
 

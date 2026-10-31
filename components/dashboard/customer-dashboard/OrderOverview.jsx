@@ -1,32 +1,41 @@
 import OverviewCard from "./OverviewCard";
 
-const OrderOverview = () => {
+const OrderOverview = ({ orders = [] }) => {
+  const onTheWayCount = orders.filter((o) =>
+    ["confirmed", "processing", "shipped"].includes(o.status),
+  ).length;
+  const deliveredCount = orders.filter((o) => o.status === "delivered").length;
+  const pendingCount = orders.filter(
+    (o) => o.status === "pending" || o.status === "pending_payment",
+  ).length;
+  const cancelledCount = orders.filter((o) => o.status === "cancelled").length;
+
   const overviews = [
     {
       id: 1,
       title: "On the Way",
-      count: 5,
+      count: onTheWayCount,
     },
     {
       id: 2,
       title: "Delivered",
-      count: 5,
+      count: deliveredCount,
     },
     {
       id: 3,
       title: "Pending",
-      count: 5,
+      count: pendingCount,
     },
     {
       id: 4,
       title: "Cancelled",
-      count: 5,
+      count: cancelledCount,
     },
   ];
 
   return (
     <section>
-      <div className="grid grid-cols-1 gap-5 xs:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {overviews.map((overview) => (
           <OverviewCard key={overview.id} overview={overview} />
         ))}

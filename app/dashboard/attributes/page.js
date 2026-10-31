@@ -1,7 +1,6 @@
 "use client";
 
 import AddAttributeModalTwo from "@/components/dashboard/attribute/AddAttributeModalTwo";
-import AttributeTable from "@/components/dashboard/attribute/AttributeTable";
 import AttributeTableTwo from "@/components/dashboard/attribute/AttributeTableTwo";
 import Breadcrumbs from "@/components/dashboard/Breadcrumbs";
 import { useRef } from "react";
@@ -31,7 +30,6 @@ const page = () => {
         </div>
       </section>
       <section>
-        {/* <AttributeTable /> */}
         <AttributeTableTwo />
       </section>
     </>

@@ -5,12 +5,16 @@ import { useForm } from "react-hook-form";
 import { LuCloudUpload, LuX } from "react-icons/lu";
 import Variations from "./Variations";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createProduct } from "@/api/productApi";
+import { createProduct, updateProduct } from "@/api/productApi";
 import { toast } from "react-toastify";
 import Editor from "./Editor";
 import { MyContext } from "@/context/MyProvider";
+import { useRouter } from "next/navigation";
 
-const ProductForm = ({ ref, setIsPending }) => {
+const ProductForm = ({ ref, setIsPending, initialData }) => {
+  const isEditMode = Boolean(initialData?._id);
+  const router = useRouter();
+
   const {
     register,
     reset,
@@ -19,7 +23,20 @@ const ProductForm = ({ ref, setIsPending }) => {
     setValue,
     getValues,
     formState,
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      productName: initialData?.productName || "",
+      slug: initialData?.slug || "",
+      productDescription: initialData?.productDescription || "",
+      price: initialData?.price || "",
+      discount: initialData?.discount || "",
+      sku: initialData?.sku || "",
+      stock: initialData?.stock || "",
+      category: initialData?.category || "",
+      productImages: initialData?.productImages || [],
+      variantDetails: initialData?.variantDetails || [],
+    },
+  });
   const { errors, isSubmitted } = formState;
 
   const queryClient = useQueryClient();
@@ -27,18 +44,52 @@ const ProductForm = ({ ref, setIsPending }) => {
   const { categories, categoriesLoading, categoriesError } =
     useContext(MyContext);
 
+  const [images, setImages] = useState(initialData?.productImages || []);
+  const [coverIndex, setCoverIndex] = useState(0);
+
+  useEffect(() => {
+    if (initialData) {
+      reset({
+        productName: initialData.productName || "",
+        slug: initialData.slug || "",
+        productDescription: initialData.productDescription || "",
+        price: initialData.price || "",
+        discount: initialData.discount || "",
+        sku: initialData.sku || "",
+        stock: initialData.stock || "",
+        category: initialData.category || "",
+        productImages: initialData.productImages || [],
+        variantDetails: initialData.variantDetails || [],
+      });
+      setImages(initialData.productImages || []);
+    }
+  }, [initialData, reset]);
+
   const mutation = useMutation({
-    mutationFn: createProduct,
+    mutationFn: (data) =>
+      isEditMode
+        ? updateProduct({ id: initialData._id, productData: data })
+        : createProduct(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
-      toast.success("Product created successfully");
-      reset();
-      setImages([]);
-      setCoverIndex(0);
-      setVariationKey((prev) => prev + 1);
+      if (isEditMode) {
+        queryClient.invalidateQueries({
+          queryKey: ["product", initialData.slug],
+        });
+        toast.success("Product updated successfully");
+        router.push("/dashboard/products");
+      } else {
+        toast.success("Product created successfully");
+        reset();
+        setImages([]);
+        setCoverIndex(0);
+        setVariationKey((prev) => prev + 1);
+      }
     },
     onError: () => {
-      toast.error("Failed to create product");
+      toast.error(
+        isEditMode ? "Failed to update product" : "Failed to create product",
+      );
     },
   });
 
@@ -51,9 +102,6 @@ const ProductForm = ({ ref, setIsPending }) => {
   const onSubmit = (data) => {
     mutation.mutate(data);
   };
-
-  const [images, setImages] = useState([]);
-  const [coverIndex, setCoverIndex] = useState(0); // default first image cover
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -80,7 +128,7 @@ const ProductForm = ({ ref, setIsPending }) => {
 
   const removeImage = (index) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
-    if (index === coverIndex) setCoverIndex(0); // reset cover if removed
+    if (index === coverIndex) setCoverIndex(0);
   };
 
   useEffect(() => {
@@ -98,9 +146,9 @@ const ProductForm = ({ ref, setIsPending }) => {
     <form
       ref={ref}
       onSubmit={handleSubmit(onSubmit)}
-      className="grid grid-cols-3 gap-5"
+      className="grid grid-cols-1 lg:grid-cols-3 gap-5"
     >
-      <div className="col-span-2">
+      <div className="lg:col-span-2">
         <div className="fieldset bg-base-100 p-5 rounded-box">
           <h2 className="font-bold text-xl">Basic Information</h2>
           <label htmlFor="productName" className="label">
@@ -172,6 +220,7 @@ const ProductForm = ({ ref, setIsPending }) => {
           setValue={setValue}
           getValues={getValues}
           errors={errors}
+          initialVariants={initialData?.variantDetails}
         />
       </div>
       <div>
@@ -250,7 +299,7 @@ const ProductForm = ({ ref, setIsPending }) => {
             Select Category
           </label>
           <select
-            defaultValue=""
+            defaultValue={initialData?.category || ""}
             className="select w-full"
             {...register("category", { required: "Category is required" })}
           >

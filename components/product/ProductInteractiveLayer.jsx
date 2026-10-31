@@ -1,18 +1,20 @@
 "use client";
 
-import { useState, useMemo, useContext } from "react";
+import { useState, useMemo, useContext, useRef } from "react";
 import ProductImages from "./ProductImages";
-import { FaStar } from "react-icons/fa6";
+import { FaHeart, FaRegHeart, FaStar } from "react-icons/fa6";
+import { LuRuler } from "react-icons/lu";
 import TrustBadges from "./TrustBadges";
+import SizeGuideModal from "./SizeGuideModal";
 import { MyContext } from "@/context/MyProvider";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
 const ProductInteractiveLayer = ({ product }) => {
   const router = useRouter();
+  const sizeGuideRef = useRef(null);
 
   // 1. Initial State Definition
-  // Stock ache emon prothom color select hobe; kono color e stock na thakle first color
   const initialVariant = useMemo(() => {
     const withStock = product?.variantDetails?.find((v) =>
       v.sizes?.some((s) => s.stock > 0),
@@ -24,38 +26,32 @@ const ProductInteractiveLayer = ({ product }) => {
     initialVariant?.color || "",
   );
 
-  // Active color variants er filtering optimization memoize kora holo
   const activeVariant = useMemo(() => {
     return product?.variantDetails?.find((v) => v.color === selectedColor);
   }, [product, selectedColor]);
 
-  // Active color based context standard sizes setup schema tracking filter
-  // Stock ache emon prothom size default select hobe; na thakle first size
   const [selectedSize, setSelectedSize] = useState(
     initialVariant?.sizes?.find((s) => s.stock > 0)?.size ||
       initialVariant?.sizes?.[0]?.size ||
       "",
   );
 
-  // Active size node tracking er madhhome deterministic individual item stock extract
   const activeSizeDetail = useMemo(() => {
     return activeVariant?.sizes?.find((s) => s.size === selectedSize);
   }, [activeVariant, selectedSize]);
 
   const [quantity, setQuantity] = useState(1);
   const currentStock = activeSizeDetail ? activeSizeDetail.stock : 0;
-  // Price display er jonno fallback — kono size selected na hole prothom size er price show korbe
   const priceRef = activeSizeDetail || activeVariant?.sizes?.[0];
 
-  // Quantity count controller with logical guards
   const handleQtyChange = (val) => {
     if (val < 1) setQuantity(1);
     else if (val > currentStock) setQuantity(currentStock);
     else setQuantity(val);
   };
 
-  // add to cart
-  const { addToCart } = useContext(MyContext);
+  const { addToCart, isInWishlist, toggleWishlist } = useContext(MyContext);
+  const wishlisted = isInWishlist ? isInWishlist(product?._id) : false;
 
   const handleAddToCart = () => {
     if (!activeVariant) {
@@ -93,8 +89,8 @@ const ProductInteractiveLayer = ({ product }) => {
         <h1 className="font-bold text-2xl lg:text-4xl">
           {product?.productName}
         </h1>
-        {/* PRICE DISPLAY BLOCK (Dynamic Discount Check) */}
-        <div className="">
+        {/* PRICE DISPLAY BLOCK */}
+        <div>
           {priceRef?.discount ? (
             <div className="flex items-baseline gap-3">
               <span className="font-bold text-2xl lg:text-3xl text-main">
@@ -129,7 +125,6 @@ const ProductInteractiveLayer = ({ product }) => {
                   key={variant.color}
                   onClick={() => {
                     setSelectedColor(variant.color);
-                    // Notun color er stock ache emon prothom size select korbo
                     setSelectedSize(
                       variant?.sizes?.find((s) => s.stock > 0)?.size || "",
                     );
@@ -138,7 +133,11 @@ const ProductInteractiveLayer = ({ product }) => {
                   className="cursor-pointer"
                 >
                   <div
-                    className={`size-12 rounded-lg overflow-hidden border ${selectedColor === variant.color ? "border-main" : "border-base-300"}`}
+                    className={`size-12 rounded-lg overflow-hidden border ${
+                      selectedColor === variant.color
+                        ? "border-main"
+                        : "border-base-300"
+                    }`}
                   >
                     <img
                       src={variant?.swatchImage}
@@ -151,14 +150,23 @@ const ProductInteractiveLayer = ({ product }) => {
             </div>
           </div>
 
-          {/* 2. SIZE SELECTOR WITH STOCK CHECKS */}
+          {/* 2. SIZE SELECTOR WITH SIZE GUIDE BUTTON */}
           <div className="my-4">
-            <h3 className="font-bold text-sm">
-              Size:{" "}
-              <span className="text-neutral-400 font-normal">
-                {selectedSize}
-              </span>
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-sm">
+                Size:{" "}
+                <span className="text-neutral-400 font-normal">
+                  {selectedSize}
+                </span>
+              </h3>
+              <button
+                type="button"
+                onClick={() => sizeGuideRef.current?.showModal()}
+                className="btn btn-ghost btn-xs text-main gap-1 hover:underline"
+              >
+                <LuRuler className="text-sm" /> Size Guide
+              </button>
+            </div>
             <div className="flex flex-wrap items-center gap-2 mt-2">
               {activeVariant?.sizes?.map((item) => {
                 const isOutOfStock = item.stock <= 0;
@@ -229,7 +237,9 @@ const ProductInteractiveLayer = ({ product }) => {
             <button
               disabled={currentStock === 0}
               onClick={handleAddToCart}
-              className={`btn ${currentStock === 0 ? "btn-disabled" : "btn-neutral"} flex-1`}
+              className={`btn ${
+                currentStock === 0 ? "btn-disabled" : "btn-neutral"
+              } flex-1`}
             >
               Add to Cart
             </button>
@@ -252,10 +262,27 @@ const ProductInteractiveLayer = ({ product }) => {
             >
               Buy Now
             </button>
+            <button
+              type="button"
+              onClick={() => toggleWishlist?.(product)}
+              className={`btn btn-square ${
+                wishlisted ? "btn-error btn-soft" : "btn-outline"
+              }`}
+              title={wishlisted ? "Remove from Wishlist" : "Save to Wishlist"}
+            >
+              {wishlisted ? (
+                <FaHeart className="text-error size-5" />
+              ) : (
+                <FaRegHeart className="size-5" />
+              )}
+            </button>
           </div>
         </div>
         <TrustBadges />
       </div>
+
+      {/* Size Guide Modal */}
+      <SizeGuideModal ref={sizeGuideRef} category={product?.category} />
     </div>
   );
 };

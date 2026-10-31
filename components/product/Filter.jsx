@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchFilters } from "@/api/productApi";
 import AllProducts from "./AllProducts";
 import { useRouter, useSearchParams } from "next/navigation";
+import { LuRotateCcw } from "react-icons/lu";
 
 const Range = dynamic(() => import("react-range").then((mod) => mod.Range), {
   ssr: false,
@@ -15,6 +16,8 @@ const Range = dynamic(() => import("react-range").then((mod) => mod.Range), {
 const Filter = ({ category }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isAll = !category || category === "all";
+  const basePath = isAll ? "/products" : `/products/${category}`;
 
   const {
     data: filters,
@@ -25,31 +28,38 @@ const Filter = ({ category }) => {
     queryFn: () => fetchFilters(category),
   });
 
-  if (isLoading) {
-    console.log("filter loading");
-  } else if (error) {
-    console.error("filter Error");
-  } else {
-    console.log(filters);
-  }
-
-  const [price, setPrice] = useState([0, 1]);
+  const [price, setPrice] = useState([0, 10000]);
 
   useEffect(() => {
     if (filters?.maxPrice) {
-      setPrice([0, filters.maxPrice]);
+      const minP = Number(searchParams.get("minPrice") || filters?.minPrice || 0);
+      const maxP = Number(searchParams.get("maxPrice") || filters?.maxPrice || 10000);
+      setPrice([minP, maxP]);
     }
-  }, [filters]);
+  }, [filters, searchParams]);
 
-  // ✅ Helper: update query string instantly
+  // Update query string
   const updateQuery = (key, value) => {
     const query = new URLSearchParams(searchParams.toString());
-    if (value) {
+    if (value !== undefined && value !== null && value !== "") {
       query.set(key, value);
     } else {
       query.delete(key);
     }
-    router.push(`/products/${category}?${query.toString()}`);
+    query.set("page", "1");
+    router.push(`${basePath}?${query.toString()}`);
+  };
+
+  const hasActiveFilters =
+    searchParams.has("minPrice") ||
+    searchParams.has("maxPrice") ||
+    searchParams.has("sizes") ||
+    searchParams.has("colors") ||
+    searchParams.has("stock") ||
+    searchParams.has("search");
+
+  const clearAllFilters = () => {
+    router.push(basePath);
   };
 
   return (
@@ -71,37 +81,51 @@ const Filter = ({ category }) => {
                   className="drawer-overlay"
                 ></label>
                 <div className="bg-base-100 w-80 min-h-full lg:min-h-auto lg:w-full p-4 shadow-sm lg:rounded-box">
-                  {/* Sidebar content here */}
+                  {/* Reset Filters */}
+                  {hasActiveFilters && (
+                    <div className="mb-4">
+                      <button
+                        onClick={clearAllFilters}
+                        className="btn btn-sm btn-outline btn-error w-full gap-2"
+                      >
+                        <LuRotateCcw /> Reset Filters
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Price Filter */}
                   <div>
                     <h4 className="text-lg font-bold">Price</h4>
                     <div className="divider mt-0"></div>
                     <div>
-                      <Range
-                        step={1}
-                        min={0}
-                        max={filters?.maxPrice}
-                        values={price}
-                        onChange={(values) => {
-                          setPrice(values);
-                          updateQuery("minPrice", values[0]);
-                          updateQuery("maxPrice", values[1]);
-                        }}
-                        renderTrack={({ props, children }) => (
-                          <div
-                            {...props}
-                            className="h-[6px] bg-neutral rounded-full w-full"
-                          >
-                            {children}
-                          </div>
-                        )}
-                        renderThumb={({ props }) => (
-                          <div
-                            {...props}
-                            key={props.key}
-                            className="size-5 rounded-full bg-main"
-                          />
-                        )}
-                      />
+                      {filters?.maxPrice ? (
+                        <Range
+                          step={50}
+                          min={filters?.minPrice || 0}
+                          max={filters?.maxPrice || 10000}
+                          values={price}
+                          onChange={(values) => {
+                            setPrice(values);
+                            updateQuery("minPrice", values[0]);
+                            updateQuery("maxPrice", values[1]);
+                          }}
+                          renderTrack={({ props, children }) => (
+                            <div
+                              {...props}
+                              className="h-[6px] bg-neutral rounded-full w-full"
+                            >
+                              {children}
+                            </div>
+                          )}
+                          renderThumb={({ props }) => (
+                            <div
+                              {...props}
+                              key={props.key}
+                              className="size-5 rounded-full bg-main"
+                            />
+                          )}
+                        />
+                      ) : null}
                       <div className="flex items-center justify-between mt-5 gap-10">
                         <span>
                           <TakaSymbol />
@@ -114,80 +138,106 @@ const Filter = ({ category }) => {
                       </div>
                     </div>
                   </div>
-                  <div className="mt-10">
+
+                  {/* Stock Availability */}
+                  <div className="mt-8">
                     <h4 className="text-lg font-bold">Availability</h4>
                     <div className="divider mt-0"></div>
-                    <div className="fieldset">
-                      <label className="label text-base-content">
+                    <div className="fieldset flex flex-col gap-2">
+                      <label className="label text-base-content cursor-pointer gap-2 justify-start">
                         <input
                           type="radio"
                           name="stock"
                           className="radio radio-sm"
+                          checked={searchParams.get("stock") === "in"}
                           onChange={() => updateQuery("stock", "in")}
                         />
                         In Stock
                       </label>
-                      <label className="label text-base-content">
+                      <label className="label text-base-content cursor-pointer gap-2 justify-start">
                         <input
                           type="radio"
                           name="stock"
                           className="radio radio-sm"
+                          checked={searchParams.get("stock") === "out"}
                           onChange={() => updateQuery("stock", "out")}
                         />
                         Out of Stock
                       </label>
                     </div>
                   </div>
-                  <div className="mt-10">
-                    <h4 className="text-lg font-bold">Size</h4>
-                    <div className="divider mt-0"></div>
-                    <div className="fieldset">
-                      {filters?.sizes?.map((size) => (
-                        <label className="label text-base-content" key={size}>
-                          <input
-                            type="checkbox"
-                            name="size"
-                            className="checkbox checkbox-sm"
-                            onChange={(e) => {
-                              const current =
-                                searchParams.get("sizes")?.split(",") || [];
-                              const updated = e.target.checked
-                                ? [...current, size]
-                                : current.filter((s) => s !== size);
-                              updateQuery("sizes", updated.join(","));
-                            }}
-                          />
-                          {size}
-                        </label>
-                      ))}
+
+                  {/* Sizes */}
+                  {filters?.sizes?.length > 0 && (
+                    <div className="mt-8">
+                      <h4 className="text-lg font-bold">Size</h4>
+                      <div className="divider mt-0"></div>
+                      <div className="fieldset flex flex-wrap gap-2">
+                        {filters.sizes.map((size) => {
+                          const isSelected = (
+                            searchParams.get("sizes")?.split(",") || []
+                          ).includes(size);
+                          return (
+                            <button
+                              key={size}
+                              type="button"
+                              onClick={() => {
+                                const current =
+                                  searchParams.get("sizes")?.split(",").filter(Boolean) || [];
+                                const updated = isSelected
+                                  ? current.filter((s) => s !== size)
+                                  : [...current, size];
+                                updateQuery("sizes", updated.join(","));
+                              }}
+                              className={`btn btn-sm ${
+                                isSelected ? "btn-main" : "btn-outline"
+                              }`}
+                            >
+                              {size}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                  <div className="mt-10">
-                    <h4 className="text-lg font-bold">Color</h4>
-                    <div className="divider mt-0"></div>
-                    <div className="fieldset">
-                      {filters?.colors?.map((color, i) => (
-                        <button
-                          key={i}
-                          onClick={() => {
-                            const current =
-                              searchParams.get("colors")?.split(",") || [];
-                            const updated = current.includes(color.color)
-                              ? current.filter((col) => col !== color.color)
-                              : [...current, color.color];
-                            updateQuery("colors", updated.join(","));
-                          }}
-                          className="flex items-center gap-2 cursor-pointer"
-                        >
-                          <div
-                            className="w-6 h-6 rounded-full"
-                            style={{ backgroundColor: color.hex }}
-                          ></div>
-                          <span>{color.color}</span>
-                        </button>
-                      ))}
+                  )}
+
+                  {/* Colors */}
+                  {filters?.colors?.length > 0 && (
+                    <div className="mt-8">
+                      <h4 className="text-lg font-bold">Color</h4>
+                      <div className="divider mt-0"></div>
+                      <div className="fieldset flex flex-col gap-2">
+                        {filters.colors.map((color, i) => {
+                          const isSelected = (
+                            searchParams.get("colors")?.split(",") || []
+                          ).includes(color.color);
+                          return (
+                            <button
+                              key={i}
+                              type="button"
+                              onClick={() => {
+                                const current =
+                                  searchParams.get("colors")?.split(",").filter(Boolean) || [];
+                                const updated = isSelected
+                                  ? current.filter((col) => col !== color.color)
+                                  : [...current, color.color];
+                                updateQuery("colors", updated.join(","));
+                              }}
+                              className={`flex items-center gap-2 p-1.5 rounded-md cursor-pointer transition-all ${
+                                isSelected ? "bg-base-200 font-semibold" : "hover:bg-base-200/50"
+                              }`}
+                            >
+                              <div
+                                className="w-5 h-5 rounded-full border border-base-300"
+                                style={{ backgroundColor: color.hex }}
+                              ></div>
+                              <span className="text-sm">{color.color}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>

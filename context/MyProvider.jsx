@@ -22,7 +22,7 @@ const MyProvider = ({ children }) => {
       setNewUser(JSON.parse(storedUser));
     }
 
-    // Firebase observer একবারই attach হবে
+    // Firebase observer
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setLoading(true);
 
@@ -39,8 +39,6 @@ const MyProvider = ({ children }) => {
           setLoading(false);
         } catch (error) {
           if (error.response && error.response.status === 404) {
-            // It's a new registration, the user is not in the database yet.
-            // UserForm will handle setting the user after calling createUser API.
             console.log("New user registered, waiting for DB sync...");
             setLoading(false);
           } else {
@@ -58,17 +56,19 @@ const MyProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  //products fetching
+  // products fetching
   const { data: products, isLoading: productsLoading } = useQuery({
     queryKey: ["products"],
     queryFn: getAllProducts,
   });
 
-  //cart logic
+  // cart & wishlist & coupon logic
   const [cartItems, setCartItems] = useState([]);
+  const [wishlistItems, setWishlistItems] = useState([]);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // 1. Load cart items from localStorage on initial render safely
+  // 1. Load cart & wishlist from localStorage on initial render safely
   useEffect(() => {
     const storedCart = localStorage.getItem("cart");
     if (storedCart) {
@@ -78,15 +78,34 @@ const MyProvider = ({ children }) => {
         console.error("Cart storage parsing error:", error);
       }
     }
+
+    const storedWishlist = localStorage.getItem("wishlist");
+    if (storedWishlist) {
+      try {
+        setWishlistItems(JSON.parse(storedWishlist));
+      } catch (error) {
+        console.error("Wishlist storage parsing error:", error);
+      }
+    }
+
     setIsHydrated(true);
   }, []);
 
-  // 2. After initial hydration, save cart items to localStorage whenever they change
+  // 2. Save cart & wishlist to localStorage whenever they change
   useEffect(() => {
     if (isHydrated) {
       localStorage.setItem("cart", JSON.stringify(cartItems));
+      if (cartItems.length === 0) {
+        setAppliedCoupon(null);
+      }
     }
   }, [cartItems, isHydrated]);
+
+  useEffect(() => {
+    if (isHydrated) {
+      localStorage.setItem("wishlist", JSON.stringify(wishlistItems));
+    }
+  }, [wishlistItems, isHydrated]);
 
   // 3. Add function to update cart items
   const addToCart = (product, variant, size, quantity) => {
@@ -99,7 +118,6 @@ const MyProvider = ({ children }) => {
     const stock = activeSizeDetail ? activeSizeDetail.stock : 0;
 
     if (existingCartItem) {
-      // If exists, update the quantity
       const newQuantiy = existingCartItem.quantity + quantity;
 
       if (newQuantiy > stock) {
@@ -116,7 +134,6 @@ const MyProvider = ({ children }) => {
         toast.error("Product is out of stock");
         return false;
       }
-      // If not exists, add new item to cart
       const newCartItem = {
         id: cartItemId,
         productId: product._id,
@@ -124,14 +141,15 @@ const MyProvider = ({ children }) => {
         color: variant.color,
         size: size,
         quantity: quantity,
-        price: activeSizeDetail?.discount
-          ? activeSizeDetail.discount
-          : activeSizeDetail?.price
-            ? activeSizeDetail.price
-            : product.discount
-              ? product.discount
-              : product.price,
-        image: variant?.imageGallery?.[0],
+        price:
+          Number(activeSizeDetail?.discount) > 0
+            ? Number(activeSizeDetail.discount)
+            : Number(activeSizeDetail?.price) > 0
+              ? Number(activeSizeDetail.price)
+              : Number(product.discount) > 0
+                ? Number(product.discount)
+                : Number(product.price),
+        image: variant?.imageGallery?.[0] || product.productImages?.[0],
         stock: stock,
       };
       setCartItems((prevCartItems) => [...prevCartItems, newCartItem]);
@@ -153,6 +171,53 @@ const MyProvider = ({ children }) => {
     );
   };
 
+  const clearCart = () => {
+    setCartItems([]);
+    setAppliedCoupon(null);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("cart");
+    }
+  };
+
+  const clearCoupon = () => {
+    setAppliedCoupon(null);
+  };
+
+  // Wishlist functions
+  const isInWishlist = (productId) => {
+    return wishlistItems.some((item) => item._id === productId);
+  };
+
+  const toggleWishlist = (product) => {
+    if (!product || !product._id) return;
+    const exists = wishlistItems.some((item) => item._id === product._id);
+    if (exists) {
+      setWishlistItems((prev) =>
+        prev.filter((item) => item._id !== product._id),
+      );
+      toast.info(`${product.productName} removed from Wishlist`);
+    } else {
+      setWishlistItems((prev) => [
+        ...prev,
+        {
+          _id: product._id,
+          productName: product.productName,
+          slug: product.slug,
+          category: product.category,
+          price: product.price,
+          discount: product.discount,
+          productImages: product.productImages,
+          variantDetails: product.variantDetails,
+        },
+      ]);
+      toast.success(`${product.productName} added to Wishlist`);
+    }
+  };
+
+  const removeFromWishlist = (productId) => {
+    setWishlistItems((prev) => prev.filter((item) => item._id !== productId));
+  };
+
   const calculateTotalPrice = () => {
     if (cartItems.length === 0) {
       return 0;
@@ -170,13 +235,13 @@ const MyProvider = ({ children }) => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
-  //fetch location data
+  // fetch location data
   const { data: locations, isLoading: locationsLoading } = useQuery({
     queryKey: ["locations"],
     queryFn: getAllLocations,
   });
 
-  //fetch shipping data
+  // fetch shipping data
   const { data: shippingRates, isLoading: shippingRatesLoading } = useQuery({
     queryKey: ["shippingRates"],
     queryFn: getAllShippingRates,
@@ -184,7 +249,7 @@ const MyProvider = ({ children }) => {
 
   const [deliveryAdd, setDeliveryAdd] = useState(null);
 
-  //get delivery charge
+  // get delivery charge
   const [shippingPrice, setShippingPrice] = useState(null);
 
   useEffect(() => {
@@ -197,8 +262,7 @@ const MyProvider = ({ children }) => {
     }
   }, [deliveryAdd]);
 
-  //categories
-
+  // categories
   const {
     data: categories,
     isLoading: categoriesLoading,
@@ -219,6 +283,14 @@ const MyProvider = ({ children }) => {
     addToCart,
     removeFromCart,
     updateCartItemQuantity,
+    clearCart,
+    appliedCoupon,
+    setAppliedCoupon,
+    clearCoupon,
+    wishlistItems,
+    toggleWishlist,
+    isInWishlist,
+    removeFromWishlist,
     calculateTotalPrice,
     calculateTotalItem,
     locations,

@@ -14,13 +14,14 @@ const page = () => {
   const router = useRouter();
   const { cartItems, isHydrated } = useContext(MyContext);
   const [isPending, setIsPending] = useState(false);
+  const [orderCompleted, setOrderCompleted] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("cod");
 
   useEffect(() => {
-    if (isHydrated && cartItems.length === 0) {
+    if (isHydrated && cartItems.length === 0 && !orderCompleted) {
       router.push("/cart");
     }
-  }, [isHydrated, cartItems, router]);
+  }, [isHydrated, cartItems, orderCompleted, router]);
 
   const checkoutRef = useRef(null);
 
@@ -57,6 +58,7 @@ const page = () => {
                 <ShippingForm
                   ref={checkoutRef}
                   setIsPending={setIsPending}
+                  setOrderCompleted={setOrderCompleted}
                   paymentMethod={paymentMethod}
                 />
               </div>

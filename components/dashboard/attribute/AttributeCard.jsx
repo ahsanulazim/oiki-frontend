@@ -1,9 +1,11 @@
 import { useRef } from "react";
 import { LuSquarePen, LuTrash2 } from "react-icons/lu";
 import AddAttributeModalTwo from "./AddAttributeModalTwo";
+import AttributeDeleteModal from "./AttributeDeleteModal";
 
 const AttributeCard = ({ attribute }) => {
   const attributeEditRef = useRef(null);
+  const attributeDeleteRef = useRef(null);
 
   return (
     <div className="card bg-base-100">
@@ -12,6 +14,7 @@ const AttributeCard = ({ attribute }) => {
         ref={attributeEditRef}
         attribute={attribute}
       />
+      <AttributeDeleteModal ref={attributeDeleteRef} id={attribute._id} />
       <div className="card-body">
         <div className="flex items-center justify-between">
           <h2 className="card-title">{attribute.name}</h2>
@@ -44,7 +47,10 @@ const AttributeCard = ({ attribute }) => {
           >
             <LuSquarePen /> Edit
           </button>
-          <button className="btn btn-error btn-sm">
+          <button
+            className="btn btn-error btn-sm"
+            onClick={() => attributeDeleteRef.current.showModal()}
+          >
             <LuTrash2 /> Delete
           </button>
         </div>

@@ -6,32 +6,22 @@ import { MyContext } from "@/context/MyProvider";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
 
-const page = () => {
+const SettingsPage = () => {
   const router = useRouter();
-
   const { newUser, loading } = useContext(MyContext);
 
   useEffect(() => {
-    if (loading) {
-      return;
+    if (!loading && !newUser) {
+      router.push("/login");
     }
-
-    if (!newUser) {
-      router.push("/");
-    }
-  }, [newUser, loading]);
+  }, [newUser, loading, router]);
 
   return (
-    <>
+    <div className="space-y-4">
       <Breadcrumbs title="Settings" />
-      <section className="mb-5">
-        <h2 className="font-bold text-2xl w-1/2">Settings</h2>
-      </section>
-      <section>
-        <Settings />
-      </section>
-    </>
+      <Settings />
+    </div>
   );
 };
 
-export default page;
+export default SettingsPage;

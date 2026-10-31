@@ -1,15 +1,18 @@
+import { api } from "@/axios/axiosInstance";
+
 export const createProduct = async (productData) => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/products/createProduct`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(productData),
-    },
-  );
-  return res.json();
+  const res = await api.post("/products/createProduct", productData);
+  return res.data;
+};
+
+export const updateProduct = async ({ id, productData }) => {
+  const res = await api.put(`/products/updateProduct?id=${id}`, productData);
+  return res.data;
+};
+
+export const getProductBySlug = async (slug) => {
+  const res = await api.get(`/products/getProductBySlug?slug=${slug}`);
+  return res.data;
 };
 
 export const getAllProducts = async () => {
@@ -39,31 +42,19 @@ export const getNewArrivals = async () => {
 };
 
 export const deleteProduct = async (id) => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/products/deleteProduct/?id=${id}`,
-    {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  );
-
-  if (!res.ok) {
-    throw new Error("Deleting Failed");
-  }
-
-  return res.json();
+  const res = await api.delete(`/products/deleteProduct/?id=${id}`);
+  return res.data;
 };
 
 // lib/api/filters.js
 export async function fetchFilters(category) {
+  const cat = category || "all";
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/products/getCategoryFilters/?category=${category}`,
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/products/getCategoryFilters/?category=${cat}`,
     {
       method: "GET",
       headers: { "Content-Type": "application/json" },
-      cache: "no-store", // ✅ Next.js এ fresh data নিশ্চিত করতে
+      cache: "no-store",
     },
   );
 
@@ -74,7 +65,7 @@ export async function fetchFilters(category) {
   return res.json();
 }
 
-//get products by filters
+// get products by filters
 export const getProductsByFilters = async (
   category,
   page,
@@ -82,17 +73,18 @@ export const getProductsByFilters = async (
   filters = {},
 ) => {
   const query = new URLSearchParams({
-    category,
-    page,
-    limit,
+    category: category || "all",
+    page: page || 1,
+    limit: limit || 12,
   });
 
-  // filters object থেকে truthy values গুলো query-তে add করো
   if (filters.minPrice) query.set("minPrice", filters.minPrice);
   if (filters.maxPrice) query.set("maxPrice", filters.maxPrice);
   if (filters.sizes) query.set("sizes", filters.sizes);
   if (filters.colors) query.set("colors", filters.colors);
   if (filters.stock) query.set("stock", filters.stock);
+  if (filters.sort) query.set("sort", filters.sort);
+  if (filters.search) query.set("search", filters.search);
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_SERVER_URL}/products/getProductsByFilters/?${query.toString()}`,
@@ -105,8 +97,24 @@ export const getProductsByFilters = async (
   );
 
   if (!res.ok) {
-    throw new Error("Failed to fetch filters");
+    throw new Error("Failed to fetch products");
   }
 
+  return res.json();
+};
+
+// Live search products
+export const searchProductsApi = async (query) => {
+  if (!query || !query.trim()) return [];
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/products/search?q=${encodeURIComponent(query.trim())}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+  if (!res.ok) return [];
   return res.json();
 };

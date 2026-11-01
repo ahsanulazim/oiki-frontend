@@ -48,6 +48,9 @@ const Footer = () => {
             <Link href="/about" className="link link-hover">
               About Oiki &amp; Contact
             </Link>
+            <Link href="/sitemap" className="link link-hover">
+              Sitemap
+            </Link>
           </nav>
         </div>
       </footer>
@@ -55,7 +58,12 @@ const Footer = () => {
         <aside>
           <p className="text-xs">
             Copyright © {new Date().getFullYear()} - All rights reserved by{" "}
-            <a className="link" href="https://nexorosolution.com">
+            <a
+              className="link"
+              href="https://nexorosolution.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Nexoro Solutions
             </a>
           </p>

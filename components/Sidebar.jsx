@@ -1,9 +1,29 @@
+"use client";
+import { getAllCategories } from "@/api/categoryApi";
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import Alert from "./Alert";
 import Dock from "./Dock";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 
 const Sidebar = ({ children }) => {
+  const {
+    data: categories,
+    isLoading: categoriesLoading,
+    isError: categoriesError,
+  } = useQuery({
+    queryKey: ["categories"],
+    queryFn: getAllCategories,
+  });
+
+  const closeDrawer = () => {
+    const drawerCheckbox = document.getElementById("my-drawer-2");
+    if (drawerCheckbox) {
+      drawerCheckbox.checked = false;
+    }
+  };
+
   return (
     <div className="drawer">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
@@ -25,12 +45,35 @@ const Sidebar = ({ children }) => {
         ></label>
         <ul className="menu bg-base-200 min-h-full w-80 p-4">
           {/* Sidebar content here */}
-          <li>
-            <a>Sidebar Item 1</a>
+          <li className="menu-title font-semibold text-base text-main mb-2">
+            Categories
           </li>
-          <li>
-            <a>Sidebar Item 2</a>
-          </li>
+          {categoriesLoading ? (
+            <li>
+              <div className="flex items-center justify-center py-4">
+                <span className="loading loading-spinner loading-sm"></span>
+              </div>
+            </li>
+          ) : categoriesError ? (
+            <li className="text-error text-sm px-4 py-2">
+              Failed to load categories
+            </li>
+          ) : Array.isArray(categories) && categories.length > 0 ? (
+            categories.map((category) => (
+              <li key={category._id || category.slug}>
+                <Link
+                  href={`/products/${category.slug}`}
+                  onClick={closeDrawer}
+                >
+                  {category.name}
+                </Link>
+              </li>
+            ))
+          ) : (
+            <li className="text-sm px-4 py-2 text-base-content/60">
+              No categories found
+            </li>
+          )}
         </ul>
       </div>
     </div>

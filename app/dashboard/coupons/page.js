@@ -309,7 +309,8 @@ const CouponsPage = () => {
         (Number(p.discount) > 0 && Number(p.discount) < Number(p.price)) ||
         (p.variantDetails || []).some((v) =>
           (v.sizes || []).some(
-            (s) => Number(s.discount) > 0 && Number(s.discount) < Number(s.price),
+            (s) =>
+              Number(s.discount) > 0 && Number(s.discount) < Number(s.price),
           ),
         ),
     ).length;
@@ -371,9 +372,9 @@ const CouponsPage = () => {
             <button
               type="button"
               onClick={handleOpenCreate}
-              className="btn btn-main btn-sm gap-1.5"
+              className="btn btn-main"
             >
-              <LuPlus className="size-4" /> Create Coupon
+              <LuPlus /> Create Coupon
             </button>
           )}
         </div>
@@ -1440,4 +1441,3 @@ const CouponsPage = () => {
 };
 
 export default CouponsPage;
-

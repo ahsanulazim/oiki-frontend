@@ -30,10 +30,24 @@ const Filter = ({ category }) => {
 
   const [price, setPrice] = useState([0, 10000]);
 
+  const minLimit = 0;
+  const maxLimit = Number(filters?.maxPrice) > 0 ? Number(filters.maxPrice) : 10000;
+
+  const clampedValues = [
+    Math.max(minLimit, Math.min(price[0], maxLimit)),
+    Math.min(maxLimit, Math.max(price[1], minLimit)),
+  ];
+  if (clampedValues[0] > clampedValues[1]) {
+    clampedValues[0] = minLimit;
+    clampedValues[1] = maxLimit;
+  }
+
   useEffect(() => {
-    if (filters?.maxPrice) {
-      const minP = Number(searchParams.get("minPrice") || filters?.minPrice || 0);
-      const maxP = Number(searchParams.get("maxPrice") || filters?.maxPrice || 10000);
+    if (filters?.maxPrice !== undefined) {
+      const minP = Number(searchParams.get("minPrice") ?? 0);
+      const maxP = Number(
+        searchParams.get("maxPrice") ?? (Number(filters?.maxPrice) > 0 ? filters.maxPrice : 10000)
+      );
       setPrice([minP, maxP]);
     }
   }, [filters, searchParams]);
@@ -98,44 +112,46 @@ const Filter = ({ category }) => {
                     <h4 className="text-lg font-bold">Price</h4>
                     <div className="divider mt-0"></div>
                     <div>
-                      {filters?.maxPrice ? (
-                        <Range
-                          step={50}
-                          min={filters?.minPrice || 0}
-                          max={filters?.maxPrice || 10000}
-                          values={price}
-                          onChange={(values) => {
-                            setPrice(values);
-                            updateQuery("minPrice", values[0]);
-                            updateQuery("maxPrice", values[1]);
-                          }}
-                          renderTrack={({ props, children }) => (
-                            <div
-                              {...props}
-                              className="h-[6px] bg-neutral rounded-full w-full"
-                            >
-                              {children}
-                            </div>
-                          )}
-                          renderThumb={({ props }) => (
-                            <div
-                              {...props}
-                              key={props.key}
-                              className="size-5 rounded-full bg-main"
-                            />
-                          )}
-                        />
+                      {filters?.maxPrice !== undefined ? (
+                        <>
+                          <Range
+                            step={1}
+                            min={minLimit}
+                            max={maxLimit}
+                            values={clampedValues}
+                            onChange={(values) => {
+                              setPrice(values);
+                              updateQuery("minPrice", values[0]);
+                              updateQuery("maxPrice", values[1]);
+                            }}
+                            renderTrack={({ props, children }) => (
+                              <div
+                                {...props}
+                                className="h-[6px] bg-neutral rounded-full w-full"
+                              >
+                                {children}
+                              </div>
+                            )}
+                            renderThumb={({ props }) => (
+                              <div
+                                {...props}
+                                key={props.key}
+                                className="size-5 rounded-full bg-main"
+                              />
+                            )}
+                          />
+                          <div className="flex items-center justify-between mt-5 gap-10">
+                            <span>
+                              <TakaSymbol />
+                              {price[0]}
+                            </span>
+                            <span>
+                              <TakaSymbol />
+                              {price[1]}
+                            </span>
+                          </div>
+                        </>
                       ) : null}
-                      <div className="flex items-center justify-between mt-5 gap-10">
-                        <span>
-                          <TakaSymbol />
-                          {price[0]}
-                        </span>
-                        <span>
-                          <TakaSymbol />
-                          {price[1]}
-                        </span>
-                      </div>
                     </div>
                   </div>
 

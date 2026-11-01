@@ -1,6 +1,7 @@
 "use client";
 import { getProductsByFilters } from "@/api/productApi";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProductCard from "../ui/ProductCard";
 import ProductCardSkeleton from "../ui/skeleton/ProductCardSkeleton";
@@ -41,10 +42,10 @@ const AllProducts = ({ category }) => {
     queryFn: () => getProductsByFilters(category, page, 12, filters),
   });
 
-  const goToPage = (pageNum) => {
+  const getPageUrl = (pageNum) => {
     const query = new URLSearchParams(searchParams.toString());
     query.set("page", pageNum);
-    router.push(`${basePath}?${query.toString()}`);
+    return `${basePath}?${query.toString()}`;
   };
 
   const clearSearch = () => {
@@ -63,7 +64,7 @@ const AllProducts = ({ category }) => {
       {search && (
         <div className="flex items-center justify-between bg-base-200/60 border border-base-300 rounded-box px-4 py-2 mt-3">
           <div className="text-sm">
-            Showing results for: <span className="font-semibold text-main">"{search}"</span>
+            Showing results for: <span className="font-semibold text-main">&quot;{search}&quot;</span>
             {productsData?.totalProducts !== undefined && (
               <span className="opacity-70 ml-2">({productsData.totalProducts} found)</span>
             )}
@@ -93,7 +94,7 @@ const AllProducts = ({ category }) => {
           <div className="col-span-full py-16 text-center">
             <h3 className="font-bold text-xl text-base-content/80">No products found</h3>
             <p className="text-sm opacity-60 mt-1 max-w-sm mx-auto">
-              We couldn't find any products matching your selected filters. Try resetting your filters.
+              We couldn&apos;t find any products matching your selected filters. Try resetting your filters.
             </p>
           </div>
         ) : (
@@ -103,37 +104,61 @@ const AllProducts = ({ category }) => {
         )}
       </div>
 
-      {/* Pagination Controls */}
+      {/* Pagination Controls with SEO-friendly Links */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center my-6">
           <div className="join border border-base-300">
-            <button
-              onClick={() => goToPage(page - 1)}
-              disabled={page <= 1}
-              className="join-item btn btn-sm"
-              aria-label="Previous Page"
-            >
-              <LuArrowLeft />
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+            {page <= 1 ? (
               <button
+                disabled
+                className="join-item btn btn-sm btn-disabled"
+                aria-label="Previous Page"
+              >
+                <LuArrowLeft />
+              </button>
+            ) : (
+              <Link
+                href={getPageUrl(page - 1)}
+                scroll={false}
+                className="join-item btn btn-sm"
+                aria-label="Previous Page"
+              >
+                <LuArrowLeft />
+              </Link>
+            )}
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+              <Link
                 key={num}
-                onClick={() => goToPage(num)}
+                href={getPageUrl(num)}
+                scroll={false}
                 className={`join-item btn btn-sm ${
-                  num === page ? "btn-main" : ""
+                  num === page ? "btn-main font-bold" : ""
                 }`}
+                aria-current={num === page ? "page" : undefined}
               >
                 {num}
-              </button>
+              </Link>
             ))}
-            <button
-              onClick={() => goToPage(page + 1)}
-              disabled={page >= totalPages}
-              className="join-item btn btn-sm"
-              aria-label="Next Page"
-            >
-              <LuArrowRight />
-            </button>
+
+            {page >= totalPages ? (
+              <button
+                disabled
+                className="join-item btn btn-sm btn-disabled"
+                aria-label="Next Page"
+              >
+                <LuArrowRight />
+              </button>
+            ) : (
+              <Link
+                href={getPageUrl(page + 1)}
+                scroll={false}
+                className="join-item btn btn-sm"
+                aria-label="Next Page"
+              >
+                <LuArrowRight />
+              </Link>
+            )}
           </div>
         </div>
       )}
